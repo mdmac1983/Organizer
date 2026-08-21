@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Gray fallback palette (pre-Android 12) -->
+    <color name="gray_10">#FAFAFA</color>
+    <color name="gray_50">#F5F5F5</color>
+    <color name="gray_100">#EEEEEE</color>
+    <color name="gray_200">#E0E0E0</color>
+    <color name="gray_300">#BDBDBD</color>
+    <color name="gray_400">#9E9E9E</color>
+    <color name="gray_500">#757575</color>
+    <color name="gray_600">#616161</color>
+    <color name="gray_700">#424242</color>
+    <color name="gray_800">#303030</color>
+    <color name="gray_900">#212121</color>
+
+    <color name="md_primary">@color/gray_700</color>
+    <color name="md_on_primary">@color/gray_10</color>
+    <color name="md_primary_container">@color/gray_200</color>
+    <color name="md_on_primary_container">@color/gray_900</color>
+
+    <color name="md_background">@color/gray_50</color>
+    <color name="md_on_background">@color/gray_900</color>
+    <color name="md_surface">@color/gray_10</color>
+    <color name="md_on_surface">@color/gray_900</color>
+    <color name="md_surface_variant">@color/gray_100</color>
+    <color name="md_on_surface_variant">@color/gray_600</color>
+
+    <color name="md_error">#B3261E</color>
+    <color name="md_on_error">#FFFFFF</color>
+</resources>
