@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- On API 31+, this swaps the parent to the dynamic color variant.
+         System wallpaper-based colors take over; gray_* palette above
+         is unused on these devices unless dynamic color is disabled. -->
+    <style name="Theme.Organizer" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar" />
+</resources>
