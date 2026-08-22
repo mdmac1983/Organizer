@@ -1,11 +1,14 @@
 package com.mdmac.organizer.ui.notes
 
 import android.os.Bundle
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.mdmac.organizer.data.OrganizerDatabase
 import com.mdmac.organizer.data.notes.NoteBlock
 import com.mdmac.organizer.data.notes.NoteBlockType
+import com.mdmac.organizer.data.notes.NoteImageStore
 import com.mdmac.organizer.data.notes.NoteRepository
 import com.mdmac.organizer.databinding.ActivityNoteEditorBinding
 
@@ -17,6 +20,18 @@ class NoteEditorActivity : AppCompatActivity() {
     private val viewModel: NoteEditorViewModel by viewModels {
         val dao = OrganizerDatabase.getInstance(applicationContext).noteDao()
         NoteEditorViewModel.Factory(NoteRepository(dao))
+    }
+
+    private val pickImageLauncher = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
+            val path = NoteImageStore.save(this, uri)
+            if (path != null) {
+                viewModel.blocks.add(NoteBlock(type = NoteBlockType.IMAGE, text = path))
+                blockAdapter.notifyItemInserted(viewModel.blocks.size - 1)
+            }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +65,11 @@ class NoteEditorActivity : AppCompatActivity() {
         binding.btnAddChecklistItem.setOnClickListener {
             viewModel.blocks.add(NoteBlock(type = NoteBlockType.CHECKLIST_ITEM))
             blockAdapter.notifyItemInserted(viewModel.blocks.size - 1)
+        }
+        binding.btnAddPhoto.setOnClickListener {
+            pickImageLauncher.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
         }
 
         viewModel.loadIfNeeded(noteId, folderId) {
