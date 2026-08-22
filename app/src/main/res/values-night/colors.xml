@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Standard Material light-theme error red (#B00020) has poor contrast
+         against the #121212 dark surface, so dark mode gets a lighter variant. -->
+    <color name="error_color">#FFCF6679</color>
+</resources>
