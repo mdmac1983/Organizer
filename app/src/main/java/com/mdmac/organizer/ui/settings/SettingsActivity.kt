@@ -14,6 +14,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.mdmac.organizer.data.OrganizerDatabase
 import com.mdmac.organizer.databinding.ActivitySettingsBinding
 import com.mdmac.organizer.security.PinManager
+import com.mdmac.organizer.util.IconAliasManager
 import androidx.appcompat.app.AlertDialog
 import android.widget.LinearLayout
 import java.io.File
@@ -61,6 +62,23 @@ class SettingsActivity : AppCompatActivity() {
         }
         binding.btnImportBackup.setOnClickListener {
             importLauncher.launch(arrayOf("application/zip"))
+        }
+
+        binding.btnIdentityDefault.setOnClickListener {
+            IconAliasManager.setActive(this, IconAliasManager.Alias.DEFAULT)
+            Toast.makeText(this, "Switched — check your home screen", Toast.LENGTH_LONG).show()
+        }
+        binding.btnIdentityOwnerInfo.setOnClickListener {
+            IconAliasManager.setActive(this, IconAliasManager.Alias.OWNER_INFO)
+            Toast.makeText(this, "Switched — check your home screen", Toast.LENGTH_LONG).show()
+        }
+        binding.btnIdentityCalculator.setOnClickListener {
+            IconAliasManager.setActive(this, IconAliasManager.Alias.CALCULATOR)
+            Toast.makeText(this, "Switched — check your home screen", Toast.LENGTH_LONG).show()
+        }
+        binding.btnIdentityMusic.setOnClickListener {
+            IconAliasManager.setActive(this, IconAliasManager.Alias.MUSIC)
+            Toast.makeText(this, "Switched — check your home screen", Toast.LENGTH_LONG).show()
         }
 
         updateStorageStatus()
