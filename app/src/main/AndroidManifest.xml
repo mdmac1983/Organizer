@@ -5,6 +5,13 @@
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
 
+    <!-- For the Touch Blocker's persistent "active" notification (Android 13+). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Lets Settings prompt the user to exempt the app from battery optimization,
+         so Touch Blocker / Home role / Device Admin keep running reliably. -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
     <!-- Lets the Apps tab enumerate other launchable apps under Android 11+
          package visibility rules, without needing QUERY_ALL_PACKAGES. -->
     <queries>
@@ -39,7 +46,17 @@
 
         <activity
             android:name=".MainActivity"
-            android:exported="false" />
+            android:exported="true"
+            android:launchMode="singleTask">
+            <!-- Lets the user pick Simple Planner as their device's Home app.
+                 When launched this way, it opens straight to the Apps tab
+                 (see MainActivity) so it acts as the app drawer. -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".ui.notes.NoteEditorActivity"
@@ -48,6 +65,31 @@
         <activity
             android:name=".ui.settings.SettingsActivity"
             android:exported="false" />
+
+        <service
+            android:name=".accessibility.TouchBlockerService"
+            android:exported="true"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:label="Touch Blocker">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
+        <receiver
+            android:name=".admin.PlannerDeviceAdminReceiver"
+            android:exported="true"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin_policies" />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </receiver>
 
     </application>
 
