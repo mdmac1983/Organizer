@@ -2,10 +2,20 @@
 <resources>
     <color name="white">#FFFFFFFF</color>
     <color name="black">#FF000000</color>
-    <color name="gray_50">#FFD3D3D3</color>
+    <color name="gray_50">#FFFAFAFA</color>
     <color name="gray_100">#FFF5F5F5</color>
     <color name="gray_200">#FFEEEEEE</color>
     <color name="gray_300">#FFE0E0E0</color>
     <color name="gray_400">#FFBDBDBD</color>
+
+    <!-- Teal theme palette -->
+    <color name="teal_primary">#FF008080</color>
+    <color name="teal_dark_variant">#FF00796B</color>
+    <color name="teal_deep">#FF004D40</color>
+    <color name="teal_muted">#80008080</color>
+    <color name="teal_container_light">#FFCCE6E6</color>
+    <color name="teal_container_dark">#FF0D3B33</color>
+    <color name="dark_surface">#FF121212</color>
+    <color name="dark_surface_variant">#FF1E1E1E</color>
     <color name="error_color">#FFB00020</color>
 </resources>
