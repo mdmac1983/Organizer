@@ -26,7 +26,6 @@ class PasswordsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var pinManager: PinManager
-    private var pendingFirstPin: String? = null // holds step-1 PIN while awaiting confirmation
 
     private val viewModel: PasswordViewModel by viewModels {
         val dao = OrganizerDatabase.getInstance(requireContext()).passwordDao()
@@ -86,55 +85,32 @@ class PasswordsFragment : Fragment() {
     }
 
     private fun showLockScreen() {
+        if (!pinManager.isPinSet()) {
+            // No PIN set — skip the lock screen entirely
+            unlock()
+            return
+        }
+
         binding.lockContainer.visibility = View.VISIBLE
         binding.contentContainer.visibility = View.GONE
         binding.lockError.visibility = View.GONE
         binding.inputPin.text?.clear()
 
-        if (pinManager.isPinSet()) {
-            binding.lockTitle.text = "Enter PIN"
-            binding.lockSubtitle.visibility = View.GONE
-            binding.btnSubmitPin.text = "Unlock"
-        } else {
-            binding.lockTitle.text = "Create PIN"
-            binding.lockSubtitle.visibility = View.VISIBLE
-            binding.lockSubtitle.text = "Choose a PIN to protect this tab"
-            binding.btnSubmitPin.text = "Continue"
-            pendingFirstPin = null
-        }
+        binding.lockTitle.text = "Enter PIN"
+        binding.lockSubtitle.visibility = View.GONE
+        binding.btnSubmitPin.text = "Unlock"
     }
 
     private fun handlePinSubmit() {
         val entered = binding.inputPin.text?.toString().orEmpty()
         if (entered.isEmpty()) return
 
-        if (pinManager.isPinSet()) {
-            if (pinManager.verifyPin(entered)) {
-                unlock()
-            } else {
-                binding.lockError.visibility = View.VISIBLE
-                binding.lockError.text = "Incorrect PIN"
-                binding.inputPin.text?.clear()
-            }
+        if (pinManager.verifyPin(entered)) {
+            unlock()
         } else {
-            val first = pendingFirstPin
-            if (first == null) {
-                pendingFirstPin = entered
-                binding.lockTitle.text = "Confirm PIN"
-                binding.lockSubtitle.text = "Enter the same PIN again"
-                binding.inputPin.text?.clear()
-                binding.lockError.visibility = View.GONE
-            } else if (first == entered) {
-                pinManager.setPin(entered)
-                unlock()
-            } else {
-                binding.lockError.visibility = View.VISIBLE
-                binding.lockError.text = "PINs didn't match — try again"
-                pendingFirstPin = null
-                binding.lockTitle.text = "Create PIN"
-                binding.lockSubtitle.text = "Choose a PIN to protect this tab"
-                binding.inputPin.text?.clear()
-            }
+            binding.lockError.visibility = View.VISIBLE
+            binding.lockError.text = "Incorrect PIN"
+            binding.inputPin.text?.clear()
         }
     }
 
