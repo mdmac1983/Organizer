@@ -9,11 +9,19 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.mdmac.organizer.R
 import com.mdmac.organizer.data.OrganizerDatabase
 import com.mdmac.organizer.data.planner.PlannerRepository
 import com.mdmac.organizer.databinding.FragmentPlannerBinding
+import com.mdmac.organizer.databinding.ItemDayStripBoxBinding
+import com.mdmac.organizer.util.DateRangeUtils
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class PlannerFragment : Fragment() {
 
@@ -25,7 +33,8 @@ class PlannerFragment : Fragment() {
         PlannerViewModel.Factory(PlannerRepository(dao))
     }
 
-    private lateinit var adapter: PlannerEntryAdapter
+    private lateinit var entryAdapter: PlannerEntryAdapter
+    private lateinit var calendarAdapter: CalendarGridAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -37,7 +46,7 @@ class PlannerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = PlannerEntryAdapter(
+        entryAdapter = PlannerEntryAdapter(
             onClick = { entry ->
                 AddEditPlannerEntryDialog(entry) { viewModel.save(it) }
                     .show(childFragmentManager, "edit_entry")
@@ -48,7 +57,11 @@ class PlannerFragment : Fragment() {
             }
         )
         binding.entriesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.entriesRecyclerView.adapter = adapter
+        binding.entriesRecyclerView.adapter = entryAdapter
+
+        calendarAdapter = CalendarGridAdapter(onDayClick = { day -> viewModel.selectDay(day.dateMillis) })
+        binding.calendarGridRecyclerView.layoutManager = GridLayoutManager(requireContext(), 7)
+        binding.calendarGridRecyclerView.adapter = calendarAdapter
 
         binding.modeToggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
@@ -73,29 +86,64 @@ class PlannerFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
+                    viewModel.mode.collect { mode -> updateModeVisibility(mode) }
+                }
+                launch {
                     viewModel.entries.collect { list ->
-                        adapter.submitList(list)
+                        entryAdapter.submitList(list)
                         binding.emptyView.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
                     }
                 }
                 launch {
-                    combine2(viewModel.anchorMillis, viewModel.mode) { anchor, mode ->
-                        binding.periodLabel.text =
-                            com.mdmac.organizer.util.DateRangeUtils.label(anchor, mode)
+                    combine(viewModel.anchorMillis, viewModel.mode) { anchor, mode -> anchor to mode }
+                        .collect { (anchor, mode) ->
+                            binding.periodLabel.text = DateRangeUtils.label(anchor, mode)
+                            when (mode) {
+                                PlannerViewMode.WEEK -> populateWeekStrip(anchor)
+                                PlannerViewMode.MONTH -> calendarAdapter.submitList(DateRangeUtils.monthGridDays(anchor))
+                                PlannerViewMode.DAY -> Unit
+                            }
+                        }
+                }
+                launch {
+                    viewModel.selectedDayMillis.collect { selected ->
+                        calendarAdapter.selectedDayMillis = selected
+                    }
+                }
+                launch {
+                    viewModel.monthEntries.collect { list ->
+                        calendarAdapter.daysWithEntries = list.map { it.dateTimeMillis }.toSet()
                     }
                 }
             }
         }
     }
 
-    // small local helper since combine() needs both flows collected together
-    private suspend fun combine2(
-        f1: kotlinx.coroutines.flow.StateFlow<Long>,
-        f2: kotlinx.coroutines.flow.StateFlow<PlannerViewMode>,
-        action: (Long, PlannerViewMode) -> Unit
-    ) {
-        kotlinx.coroutines.flow.combine(f1, f2) { a, m -> a to m }
-            .collect { (a, m) -> action(a, m) }
+    private fun updateModeVisibility(mode: PlannerViewMode) {
+        binding.weekDayStripContainer.visibility = if (mode == PlannerViewMode.WEEK) View.VISIBLE else View.GONE
+        binding.monthCalendarContainer.visibility = if (mode == PlannerViewMode.MONTH) View.VISIBLE else View.GONE
+        entryAdapter.bulletStyle = (mode == PlannerViewMode.DAY)
+    }
+
+    private fun populateWeekStrip(anchorMillis: Long) {
+        binding.weekDayStripContainer.removeAllViews()
+        val (weekStart, _) = DateRangeUtils.weekRange(anchorMillis)
+        val cal = Calendar.getInstance().apply { timeInMillis = weekStart }
+        val dayFormat = SimpleDateFormat("EEE", Locale.getDefault())
+
+        repeat(7) {
+            val cellBinding = ItemDayStripBoxBinding.inflate(layoutInflater, binding.weekDayStripContainer, false)
+            cellBinding.dayStripName.text = dayFormat.format(cal.time).uppercase(Locale.getDefault())
+            cellBinding.dayStripNumber.text = cal.get(Calendar.DAY_OF_MONTH).toString()
+
+            val isToday = DateRangeUtils.isSameDay(cal.timeInMillis, System.currentTimeMillis())
+            cellBinding.dayStripNumber.setBackgroundResource(
+                if (isToday) R.drawable.bg_calendar_day_today else 0
+            )
+
+            binding.weekDayStripContainer.addView(cellBinding.root)
+            cal.add(Calendar.DAY_OF_MONTH, 1)
+        }
     }
 
     override fun onDestroyView() {
