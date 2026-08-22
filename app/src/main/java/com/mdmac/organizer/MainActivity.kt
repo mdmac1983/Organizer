@@ -7,8 +7,6 @@ import com.mdmac.organizer.databinding.ActivityMainBinding
 import com.mdmac.organizer.ui.OrganizerPagerAdapter
 import com.mdmac.organizer.ui.pinned.PinnedActivity
 import com.mdmac.organizer.ui.settings.SettingsActivity
-import com.mdmac.organizer.util.BackgroundManager
-import android.view.View
 import com.google.android.material.tabs.TabLayoutMediator
 
 class MainActivity : AppCompatActivity() {
@@ -17,13 +15,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        BackgroundManager.applyTo(this)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        if (BackgroundManager.hasCustomBackground(this)) {
-            binding.tabBackgroundImage.visibility = View.GONE
-        }
 
         binding.viewPager.adapter = OrganizerPagerAdapter(this)
         binding.viewPager.offscreenPageLimit = 3
