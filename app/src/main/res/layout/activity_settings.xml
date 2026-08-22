@@ -2,6 +2,7 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -64,79 +65,55 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="16dp"
             android:background="?attr/colorOutlineVariant" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Backup"
+            android:text="Apps Tab"
             android:textAppearance="?attr/textAppearanceTitleSmall"
             android:padding="16dp" />
 
-        <Button
-            android:id="@+id/btnExportBackup"
-            style="?attr/materialButtonOutlinedStyle"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:text="Export backup" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingBottom="16dp">
 
-        <Button
-            android:id="@+id/btnImportBackup"
-            style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="Import backup" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Dock slots"
+                android:textAppearance="?attr/textAppearanceBodyMedium" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="16dp"
-            android:background="?attr/colorOutlineVariant" />
+            <ImageButton
+                android:id="@+id/btnDockSlotsMinus"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Decrease dock slots"
+                android:src="@android:drawable/ic_media_previous" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="App identity"
-            android:textAppearance="?attr/textAppearanceTitleSmall"
-            android:padding="16dp" />
+            <TextView
+                android:id="@+id/dockSlotsValue"
+                android:layout_width="32dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.Organizer.Title"
+                tools:text="5" />
 
-        <Button
-            android:id="@+id/btnIdentityDefault"
-            style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="8dp"
-            android:text="Simple Planner (default)" />
+            <ImageButton
+                android:id="@+id/btnDockSlotsPlus"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Increase dock slots"
+                android:src="@android:drawable/ic_media_next" />
 
-        <Button
-            android:id="@+id/btnIdentityOwnerInfo"
-            style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="8dp"
-            android:text="Owner Info" />
-
-        <Button
-            android:id="@+id/btnIdentityCalculator"
-            style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="8dp"
-            android:text="Calculator" />
-
-        <Button
-            android:id="@+id/btnIdentityMusic"
-            style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="Music" />
+        </LinearLayout>
 
     </LinearLayout>
 
