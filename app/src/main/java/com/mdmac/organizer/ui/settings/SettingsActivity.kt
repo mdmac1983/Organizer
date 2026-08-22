@@ -5,8 +5,10 @@ import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
 import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -95,15 +97,18 @@ class SettingsActivity : AppCompatActivity() {
         binding.btnEnableDeviceAdmin.setOnClickListener { requestDeviceAdmin() }
         binding.btnLockScreenNow.setOnClickListener { lockScreenNow() }
 
+        binding.btnBatteryOptimization.setOnClickListener { handleBatteryOptimizationClick() }
+
         updateStorageStatus()
     }
 
     override fun onResume() {
         super.onResume()
-        // Accessibility/device-admin state changes happen in system Settings
-        // screens outside our control, so re-check whenever we come back.
+        // Accessibility/device-admin/battery state changes happen in system
+        // Settings screens outside our control, so re-check whenever we come back.
         updateTouchBlockerDisplay()
         updateDeviceAdminDisplay()
+        updateBatteryOptimizationDisplay()
     }
 
     // --- Appearance ---
@@ -198,6 +203,42 @@ class SettingsActivity : AppCompatActivity() {
             .onFailure {
                 Toast.makeText(this, "Couldn't lock screen — is device admin still active?", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    // --- Battery optimization ---
+
+    private fun isIgnoringBatteryOptimizations(): Boolean {
+        val powerManager = getSystemService(PowerManager::class.java)
+        return powerManager.isIgnoringBatteryOptimizations(packageName)
+    }
+
+    private fun updateBatteryOptimizationDisplay() {
+        val exempt = isIgnoringBatteryOptimizations()
+        binding.batteryStatus.text = if (exempt) {
+            "Battery optimization: disabled (exempted) — Touch Blocker and background features can run reliably"
+        } else {
+            "Battery optimization: enabled — Android may kill background features to save power"
+        }
+        binding.btnBatteryOptimization.text =
+            if (exempt) "Manage in battery settings" else "Disable battery optimization"
+    }
+
+    private fun handleBatteryOptimizationClick() {
+        if (isIgnoringBatteryOptimizations()) {
+            // Already exempted — the app can't re-enable optimization on its
+            // own, so send the user to the general battery settings screen
+            // where they can toggle it back on if they want to.
+            startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+        } else {
+            val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                data = Uri.parse("package:$packageName")
+            }
+            runCatching { startActivity(intent) }
+                .onFailure {
+                    // Some OEM/custom ROMs don't support the direct request intent.
+                    startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+                }
+        }
     }
 
     // --- Storage permission ---
