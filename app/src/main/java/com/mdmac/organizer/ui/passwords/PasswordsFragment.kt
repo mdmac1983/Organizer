@@ -15,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mdmac.organizer.data.OrganizerDatabase
+import com.mdmac.organizer.data.passwords.PasswordCrypto
 import com.mdmac.organizer.data.passwords.PasswordRepository
 import com.mdmac.organizer.databinding.FragmentPasswordsBinding
 import com.mdmac.organizer.security.PinManager
@@ -86,7 +87,6 @@ class PasswordsFragment : Fragment() {
 
     private fun showLockScreen() {
         if (!pinManager.isPinSet()) {
-            // No PIN set — skip the lock screen entirely
             unlock()
             return
         }
@@ -106,6 +106,7 @@ class PasswordsFragment : Fragment() {
         if (entered.isEmpty()) return
 
         if (pinManager.verifyPin(entered)) {
+            PasswordCrypto.unlock(entered, pinManager)
             unlock()
         } else {
             binding.lockError.visibility = View.VISIBLE
@@ -121,6 +122,7 @@ class PasswordsFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        PasswordCrypto.lock()
         _binding = null
     }
 }
