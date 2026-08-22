@@ -14,11 +14,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.mdmac.organizer.R
 import com.mdmac.organizer.accessibility.TouchBlockerService
 import com.mdmac.organizer.admin.PlannerDeviceAdminReceiver
 import com.mdmac.organizer.data.apps.AppsRepository
 import com.mdmac.organizer.databinding.ActivitySettingsBinding
 import com.mdmac.organizer.security.PinManager
+import com.mdmac.organizer.theme.ThemeMode
+import com.mdmac.organizer.theme.ThemePreference
 import androidx.appcompat.app.AlertDialog
 import android.widget.LinearLayout
 
@@ -29,6 +32,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var appsRepository: AppsRepository
     private lateinit var devicePolicyManager: DevicePolicyManager
     private lateinit var deviceAdminComponent: ComponentName
+    private lateinit var themePreference: ThemePreference
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -68,6 +72,9 @@ class SettingsActivity : AppCompatActivity() {
         appsRepository = AppsRepository(this)
         devicePolicyManager = getSystemService(DevicePolicyManager::class.java)
         deviceAdminComponent = ComponentName(this, PlannerDeviceAdminReceiver::class.java)
+        themePreference = ThemePreference(this)
+
+        setupAppearanceSection()
 
         binding.btnChangePin.setOnClickListener { showChangePinDialog() }
 
@@ -97,6 +104,27 @@ class SettingsActivity : AppCompatActivity() {
         // screens outside our control, so re-check whenever we come back.
         updateTouchBlockerDisplay()
         updateDeviceAdminDisplay()
+    }
+
+    // --- Appearance ---
+
+    private fun setupAppearanceSection() {
+        val checkedId = when (themePreference.getMode()) {
+            ThemeMode.LIGHT -> R.id.btnThemeLight
+            ThemeMode.DARK -> R.id.btnThemeDark
+            ThemeMode.SYSTEM -> R.id.btnThemeSystem
+        }
+        binding.appearanceToggleGroup.check(checkedId)
+
+        binding.appearanceToggleGroup.addOnButtonCheckedListener { _, id, isChecked ->
+            if (!isChecked) return@addOnButtonCheckedListener
+            val mode = when (id) {
+                R.id.btnThemeLight -> ThemeMode.LIGHT
+                R.id.btnThemeDark -> ThemeMode.DARK
+                else -> ThemeMode.SYSTEM
+            }
+            themePreference.setMode(mode) // recreates this Activity via AppCompatDelegate
+        }
     }
 
     // --- Apps tab dock slots ---
