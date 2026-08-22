@@ -29,9 +29,11 @@
     <ImageView
         android:id="@+id/blockImage"
         android:layout_width="0dp"
-        android:layout_height="160dp"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
+        android:maxHeight="300dp"
+        android:scaleType="fitCenter"
         android:contentDescription="@null"
         android:visibility="gone" />
 
