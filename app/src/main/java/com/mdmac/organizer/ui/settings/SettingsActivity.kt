@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -38,8 +39,6 @@ class SettingsActivity : AppCompatActivity() {
 
         binding.switchDarkTheme.setOnCheckedChangeListener { _, checked ->
             prefs.edit().putBoolean("dark_theme", checked).apply()
-            // Requires an AppCompatDelegate.setDefaultNightMode() call at app startup
-            // (in your Application class) reading this same pref to actually apply it.
         }
 
         binding.switchDynamicColor.setOnCheckedChangeListener { _, checked ->
@@ -70,6 +69,8 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun showChangePinDialog() {
+        Toast.makeText(this, "Button tapped", Toast.LENGTH_SHORT).show()
+
         val container = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(48, 24, 48, 0)
@@ -78,7 +79,6 @@ class SettingsActivity : AppCompatActivity() {
         val newPinInput = TextInputEditText(this).apply { hint = "New PIN" }
         val confirmPinInput = TextInputEditText(this).apply { hint = "Confirm new PIN" }
 
-        // If no PIN has been set yet, don't ask for the current one
         if (pinManager.isPinSet()) {
             container.addView(currentPinInput)
         }
