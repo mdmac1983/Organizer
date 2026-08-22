@@ -7,25 +7,38 @@
     android:orientation="vertical"
     android:background="?attr/colorSurface">
 
-    <com.google.android.material.textfield.TextInputLayout
+    <LinearLayout
+        android:id="@+id/searchBarContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
-        android:hint="Search apps"
-        app:boxBackgroundMode="none"
-        app:startIconDrawable="@android:drawable/ic_menu_search"
-        app:startIconTint="?attr/colorPrimary"
-        app:hintTextColor="?attr/colorPrimary">
+        android:background="@drawable/search_bar_background"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingVertical="10dp"
+        android:paddingHorizontal="12dp">
 
-        <com.google.android.material.textfield.TextInputEditText
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="@null"
+            android:src="@android:drawable/ic_menu_search"
+            app:tint="?attr/colorPrimary" />
+
+        <EditText
             android:id="@+id/searchInput"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minWidth="200dp"
+            android:background="@null"
+            android:gravity="center"
+            android:hint="Search apps"
             android:inputType="text"
             android:maxLines="1"
             android:textAppearance="@style/TextAppearance.Organizer.Body" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
