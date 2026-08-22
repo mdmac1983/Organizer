@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -17,12 +18,18 @@ import android.widget.LinearLayout
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
-    private lateinit var prefs: android.content.SharedPreferences
     private lateinit var pinManager: PinManager
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { granted -> updateStorageStatus() }
+    ) { granted ->
+        Toast.makeText(
+            this,
+            if (granted) "Storage permission granted" else "Storage permission denied",
+            Toast.LENGTH_SHORT
+        ).show()
+        updateStorageStatus()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,19 +38,7 @@ class SettingsActivity : AppCompatActivity() {
 
         binding.toolbar.setNavigationOnClickListener { finish() }
 
-        prefs = getSharedPreferences("organizer_settings", MODE_PRIVATE)
         pinManager = PinManager(this)
-
-        binding.switchDarkTheme.isChecked = prefs.getBoolean("dark_theme", false)
-        binding.switchDynamicColor.isChecked = prefs.getBoolean("dynamic_color", true)
-
-        binding.switchDarkTheme.setOnCheckedChangeListener { _, checked ->
-            prefs.edit().putBoolean("dark_theme", checked).apply()
-        }
-
-        binding.switchDynamicColor.setOnCheckedChangeListener { _, checked ->
-            prefs.edit().putBoolean("dynamic_color", checked).apply()
-        }
 
         binding.btnChangePin.setOnClickListener { showChangePinDialog() }
 
@@ -54,6 +49,11 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun requestStoragePermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Toast.makeText(
+                this,
+                "No permission needed on this Android version",
+                Toast.LENGTH_SHORT
+            ).show()
             updateStorageStatus()
         } else {
             permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -74,21 +74,15 @@ class SettingsActivity : AppCompatActivity() {
             setPadding(48, 24, 48, 0)
         }
 
-        val currentPinLayout = TextInputLayout(this).apply {
-            hint = "Current PIN"
-        }
+        val currentPinLayout = TextInputLayout(this).apply { hint = "Current PIN" }
         val currentPinInput = TextInputEditText(currentPinLayout.context)
         currentPinLayout.addView(currentPinInput)
 
-        val newPinLayout = TextInputLayout(this).apply {
-            hint = "New PIN"
-        }
+        val newPinLayout = TextInputLayout(this).apply { hint = "New PIN" }
         val newPinInput = TextInputEditText(newPinLayout.context)
         newPinLayout.addView(newPinInput)
 
-        val confirmPinLayout = TextInputLayout(this).apply {
-            hint = "Confirm new PIN"
-        }
+        val confirmPinLayout = TextInputLayout(this).apply { hint = "Confirm new PIN" }
         val confirmPinInput = TextInputEditText(confirmPinLayout.context)
         confirmPinLayout.addView(confirmPinInput)
 
@@ -115,6 +109,7 @@ class SettingsActivity : AppCompatActivity() {
                         showError("New PIN doesn't match confirmation")
                     else -> {
                         pinManager.setPin(new)
+                        Toast.makeText(this, "PIN saved", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
