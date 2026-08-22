@@ -2,7 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.comools"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -75,6 +75,45 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Next"
                 android:src="@android:drawable/ic_media_next" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/weekDayStripContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/monthCalendarContainer"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="4dp">
+
+                <TextView style="@style/DayOfWeekHeaderLabel" android:text="SUN" />
+                <TextView style="@style/DayOfWeekHeaderLabel" android:text="MON" />
+                <TextView style="@style/DayOfWeekHeaderLabel" android:text="TUE" />
+                <TextView style="@style/DayOfWeekHeaderLabel" android:text="WED" />
+                <TextView style="@style/DayOfWeekHeaderLabel" android:text="THU" />
+                <TextView style="@style/DayOfWeekHeaderLabel" android:text="FRI" />
+                <TextView style="@style/DayOfWeekHeaderLabel" android:text="SAT" />
+
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/calendarGridRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
         </LinearLayout>
 
