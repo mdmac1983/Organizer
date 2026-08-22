@@ -1,5 +1,6 @@
 package com.mdmac.organizer.ui.notes
 
+import android.graphics.BitmapFactory
 import android.graphics.Paint
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,10 +10,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.mdmac.organizer.data.notes.NoteBlock
 import com.mdmac.organizer.data.notes.NoteBlockType
+import com.mdmac.organizer.data.notes.NoteImageStore
 import com.mdmac.organizer.databinding.ItemNoteBlockBinding
 
-// Note: mutates NoteBlock objects in place rather than using DiffUtil,
-// so typing doesn't trigger rebinds that would fight the keyboard/cursor.
 class NoteBlockAdapter(
     private val blocks: MutableList<NoteBlock>,
     private val onDeleted: () -> Unit
@@ -32,6 +32,28 @@ class NoteBlockAdapter(
         val binding = holder.binding
 
         holder.watcher?.let { binding.blockText.removeTextChangedListener(it) }
+
+        if (block.type == NoteBlockType.IMAGE) {
+            binding.blockCheckbox.visibility = View.GONE
+            binding.blockText.visibility = View.GONE
+            binding.blockImage.visibility = View.VISIBLE
+            binding.blockImage.setImageBitmap(loadThumbnail(block.text, 400))
+
+            binding.blockDelete.setOnClickListener {
+                val pos = holder.bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    NoteImageStore.delete(block.text)
+                    blocks.removeAt(pos)
+                    notifyItemRemoved(pos)
+                    onDeleted()
+                }
+            }
+            return
+        }
+
+        binding.blockImage.visibility = View.GONE
+        binding.blockText.visibility = View.VISIBLE
+
         if (binding.blockText.text?.toString() != block.text) {
             binding.blockText.setText(block.text)
         }
@@ -67,6 +89,21 @@ class NoteBlockAdapter(
                 notifyItemRemoved(pos)
                 onDeleted()
             }
+        }
+    }
+
+    private fun loadThumbnail(path: String, reqSize: Int): android.graphics.Bitmap? {
+        return try {
+            val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+            BitmapFactory.decodeFile(path, bounds)
+            var sampleSize = 1
+            while (bounds.outWidth / sampleSize > reqSize || bounds.outHeight / sampleSize > reqSize) {
+                sampleSize *= 2
+            }
+            val loadOptions = BitmapFactory.Options().apply { inSampleSize = sampleSize }
+            BitmapFactory.decodeFile(path, loadOptions)
+        } catch (e: Exception) {
+            null
         }
     }
 
