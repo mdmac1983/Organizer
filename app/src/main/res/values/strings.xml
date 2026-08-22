@@ -5,4 +5,5 @@
     <string name="tab_contacts">Contacts</string>
     <string name="tab_passwords">Passwords</string>
     <string name="tab_notes">Notes</string>
+    <string name="pinned_content">MESSAGES TO FOLLOW IN UPDATES: FTF!</string>
 </resources>
