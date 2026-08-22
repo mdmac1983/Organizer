@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/ap/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -25,6 +25,15 @@
         android:inputType="textMultiLine|textCapSentences"
         android:padding="4dp"
         tools:text="Buy milk" />
+
+    <ImageView
+        android:id="@+id/blockImage"
+        android:layout_width="0dp"
+        android:layout_height="160dp"
+        android:layout_weight="1"
+        android:scaleType="centerCrop"
+        android:contentDescription="@null"
+        android:visibility="gone" />
 
     <ImageButton
         android:id="@+id/blockDelete"
