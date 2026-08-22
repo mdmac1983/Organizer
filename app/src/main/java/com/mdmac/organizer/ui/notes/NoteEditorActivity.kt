@@ -89,6 +89,12 @@ class NoteEditorActivity : AppCompatActivity() {
         saveAndFinish()
     }
 
+    override fun onPause() {
+        super.onPause()
+        viewModel.title = binding.inputTitle.text?.toString().orEmpty()
+        viewModel.save {}
+    }
+
     private fun android.widget.EditText.doAfterTextChangedCompat(action: (String) -> Unit) {
         addTextChangedListener(object : android.text.TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
