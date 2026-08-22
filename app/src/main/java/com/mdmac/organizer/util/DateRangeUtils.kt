@@ -17,7 +17,11 @@ object DateRangeUtils {
 
     fun weekRange(anchorMillis: Long): Pair<Long, Long> {
         val cal = Calendar.getInstance().apply { timeInMillis = anchorMillis }
-        cal.set(Calendar.DAY_OF_WEEK, cal.firstDayOfWeek)
+        // Always start the week on Sunday, regardless of device locale
+        // (locale default is used elsewhere and isn't reliably Sunday).
+        while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
+            cal.add(Calendar.DAY_OF_MONTH, -1)
+        }
         cal.set(Calendar.HOUR_OF_DAY, 0); cal.set(Calendar.MINUTE, 0)
         cal.set(Calendar.SECOND, 0); cal.set(Calendar.MILLISECOND, 0)
         val start = cal.timeInMillis
