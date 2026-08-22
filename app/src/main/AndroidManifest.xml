@@ -17,12 +17,60 @@
 
         <activity
             android:name=".ui.onboarding.SplashActivity"
-            android:exported="true">
+            android:exported="false" />
+
+        <activity-alias
+            android:name=".LauncherDefault"
+            android:targetActivity=".ui.onboarding.SplashActivity"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher"
+            android:roundIcon="@mipmap/ic_launcher_round"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".LauncherOwnerInfo"
+            android:targetActivity=".ui.onboarding.SplashActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@drawable/ic_alias_owner_info"
+            android:label="@string/alias_name_owner_info">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".LauncherCalculator"
+            android:targetActivity=".ui.onboarding.SplashActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@drawable/ic_alias_calculator"
+            android:label="@string/alias_name_calculator">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:name=".LauncherMusic"
+            android:targetActivity=".ui.onboarding.SplashActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@drawable/ic_alias_music"
+            android:label="@string/alias_name_music">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
 
         <activity
             android:name=".ui.onboarding.PinSetupActivity"
@@ -38,6 +86,10 @@
 
         <activity
             android:name=".ui.settings.SettingsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.pinned.PinnedActivity"
             android:exported="false" />
 
     </application>
