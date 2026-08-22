@@ -7,7 +7,7 @@
     <string name="tab_notes">Notes</string>
     <string name="tab_apps">Apps</string>
     <string name="hidden_folder_label">Hidden (%1$d)</string>
-    <string name="pinned_content">Pinned content coming soon.</string>
+    <string name="pinned_content">Pinned content coming soon. FTF</string>
     <string name="touch_blocker_service_description">Blocks accidental screen touches. Hold the screen for 2 seconds, or use the notification, to turn it off.</string>
     <string name="touch_blocker_notification_title">Touch Blocker active</string>
     <string name="touch_blocker_notification_text">Hold anywhere on screen for 2 seconds to disable</string>
