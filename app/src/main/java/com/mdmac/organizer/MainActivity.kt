@@ -3,12 +3,13 @@ package com.mdmac.organizer
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
 import com.mdmac.organizer.databinding.ActivityMainBinding
 import com.mdmac.organizer.ui.OrganizerPagerAdapter
+import com.mdmac.organizer.ui.pinned.PinnedActivity
 import com.mdmac.organizer.ui.settings.SettingsActivity
+import com.mdmac.organizer.util.BackgroundManager
+import android.view.View
+import com.google.android.material.tabs.TabLayoutMediator
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,11 +17,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        BackgroundManager.applyTo(this)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        if (BackgroundManager.hasCustomBackground(this)) {
+            binding.tabBackgroundImage.visibility = View.GONE
+        }
+
         binding.viewPager.adapter = OrganizerPagerAdapter(this)
-        binding.viewPager.offscreenPageLimit = 3 // keep all 4 tabs alive
+        binding.viewPager.offscreenPageLimit = 3
 
         val tabTitles = listOf(
             getString(R.string.tab_planner),
@@ -34,11 +40,16 @@ class MainActivity : AppCompatActivity() {
         }.attach()
 
         binding.toolbar.setOnMenuItemClickListener { item ->
-            if (item.itemId == R.id.action_settings) {
-                startActivity(Intent(this, SettingsActivity::class.java))
-                true
-            } else {
-                false
+            when (item.itemId) {
+                R.id.action_pinned -> {
+                    startActivity(Intent(this, PinnedActivity::class.java))
+                    true
+                }
+                R.id.action_settings -> {
+                    startActivity(Intent(this, SettingsActivity::class.java))
+                    true
+                }
+                else -> false
             }
         }
     }
