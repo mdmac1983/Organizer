@@ -61,6 +61,35 @@
             android:layout_margin="16dp"
             android:text="Grant storage permission" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:background="?attr/colorOutlineVariant" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Backup"
+            android:textAppearance="?attr/textAppearanceTitleSmall"
+            android:padding="16dp" />
+
+        <Button
+            android:id="@+id/btnExportBackup"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:text="Export backup" />
+
+        <Button
+            android:id="@+id/btnImportBackup"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Import backup" />
+
     </LinearLayout>
 
 </ScrollView>
