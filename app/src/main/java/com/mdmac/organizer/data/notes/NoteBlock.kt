@@ -3,11 +3,11 @@ package com.mdmac.organizer.data.notes
 import org.json.JSONArray
 import org.json.JSONObject
 
-enum class NoteBlockType { TEXT, CHECKLIST_ITEM }
+enum class NoteBlockType { TEXT, CHECKLIST_ITEM, IMAGE }
 
 data class NoteBlock(
     var type: NoteBlockType,
-    var text: String = "",
+    var text: String = "",   // for IMAGE blocks, this holds the local file path instead of text
     var checked: Boolean = false
 )
 
@@ -43,5 +43,7 @@ object NoteContentSerializer {
     }
 
     fun previewText(json: String): String =
-        deserialize(json).joinToString(" ") { it.text }.take(80)
+        deserialize(json).joinToString(" ") {
+            if (it.type == NoteBlockType.IMAGE) "[Photo]" else it.text
+        }.take(80)
 }
