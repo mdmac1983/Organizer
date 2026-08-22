@@ -90,6 +90,54 @@
             android:layout_margin="16dp"
             android:text="Import backup" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:background="?attr/colorOutlineVariant" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="App identity"
+            android:textAppearance="?attr/textAppearanceTitleSmall"
+            android:padding="16dp" />
+
+        <Button
+            android:id="@+id/btnIdentityDefault"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="8dp"
+            android:text="Simple Planner (default)" />
+
+        <Button
+            android:id="@+id/btnIdentityOwnerInfo"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="8dp"
+            android:text="Owner Info" />
+
+        <Button
+            android:id="@+id/btnIdentityCalculator"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="8dp"
+            android:text="Calculator" />
+
+        <Button
+            android:id="@+id/btnIdentityMusic"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Music" />
+
     </LinearLayout>
 
 </ScrollView>
