@@ -2,21 +2,15 @@ package com.mdmac.organizer.security
 
 import android.content.Context
 import android.util.Base64
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
 import java.security.MessageDigest
 import java.security.SecureRandom
 
-// Stores a salted hash of the PIN, not the PIN itself.
+// Stores a salted hash of the PIN in plain SharedPreferences (portable —
+// not hardware-Keystore-locked), so salt+hash can travel in an export
+// and be restored on any device. The PIN itself is never stored.
 class PinManager(context: Context) {
 
-    private val prefs = EncryptedSharedPreferences.create(
-        context,
-        "organizer_pin_prefs",
-        MasterKey.Builder(context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build(),
-        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-    )
+    private val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
     fun isPinSet(): Boolean = prefs.contains(KEY_HASH)
 
@@ -29,10 +23,15 @@ class PinManager(context: Context) {
     }
 
     fun verifyPin(pin: String): Boolean {
-        val saltStr = prefs.getString(KEY_SALT, null) ?: return false
+        val salt = getSaltBytes() ?: return false
         val storedHash = prefs.getString(KEY_HASH, null) ?: return false
-        val salt = Base64.decode(saltStr, Base64.NO_WRAP)
         return hash(pin, salt) == storedHash
+    }
+
+    // Exposed so PasswordCrypto can derive its AES key from the same salt.
+    fun getSaltBytes(): ByteArray? {
+        val saltStr = prefs.getString(KEY_SALT, null) ?: return null
+        return Base64.decode(saltStr, Base64.NO_WRAP)
     }
 
     private fun hash(pin: String, salt: ByteArray): String {
@@ -43,6 +42,7 @@ class PinManager(context: Context) {
     }
 
     companion object {
+        const val PREFS_NAME = "organizer_pin_prefs"
         private const val KEY_SALT = "pin_salt"
         private const val KEY_HASH = "pin_hash"
     }
