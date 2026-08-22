@@ -4,11 +4,11 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.mdmac.organizer.databinding.ActivitySettingsBinding
 import com.mdmac.organizer.security.PinManager
 import androidx.appcompat.app.AlertDialog
@@ -69,21 +69,34 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun showChangePinDialog() {
-        Toast.makeText(this, "Button tapped", Toast.LENGTH_SHORT).show()
-
         val container = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(48, 24, 48, 0)
         }
-        val currentPinInput = TextInputEditText(this).apply { hint = "Current PIN" }
-        val newPinInput = TextInputEditText(this).apply { hint = "New PIN" }
-        val confirmPinInput = TextInputEditText(this).apply { hint = "Confirm new PIN" }
+
+        val currentPinLayout = TextInputLayout(this).apply {
+            hint = "Current PIN"
+        }
+        val currentPinInput = TextInputEditText(currentPinLayout.context)
+        currentPinLayout.addView(currentPinInput)
+
+        val newPinLayout = TextInputLayout(this).apply {
+            hint = "New PIN"
+        }
+        val newPinInput = TextInputEditText(newPinLayout.context)
+        newPinLayout.addView(newPinInput)
+
+        val confirmPinLayout = TextInputLayout(this).apply {
+            hint = "Confirm new PIN"
+        }
+        val confirmPinInput = TextInputEditText(confirmPinLayout.context)
+        confirmPinLayout.addView(confirmPinInput)
 
         if (pinManager.isPinSet()) {
-            container.addView(currentPinInput)
+            container.addView(currentPinLayout)
         }
-        container.addView(newPinInput)
-        container.addView(confirmPinInput)
+        container.addView(newPinLayout)
+        container.addView(confirmPinLayout)
 
         AlertDialog.Builder(this)
             .setTitle(if (pinManager.isPinSet()) "Change app PIN" else "Set app PIN")
