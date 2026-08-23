@@ -30,7 +30,7 @@ class HomeRepository(context: Context) {
     /** Returns false (and doesn't save) if the requested size is smaller than what's currently occupied. */
     fun setOwnerColumns(value: Int): Boolean {
         val clamped = value.coerceIn(OWNER_COLUMNS_MIN, OWNER_COLUMNS_MAX)
-        val occupiedColumns = minColumnsToFit(getHomeApps(Profile.OWNER).size, getRows(Profile.OWNER))
+        val occupiedColumns = minColumnsToFit(getHomePackages(Profile.OWNER).size, getRows(Profile.OWNER))
         if (clamped < occupiedColumns) return false
         prefs.edit().putInt(KEY_OWNER_COLUMNS, clamped).apply()
         return true
@@ -38,7 +38,7 @@ class HomeRepository(context: Context) {
 
     fun setOwnerRows(value: Int): Boolean {
         val clamped = value.coerceIn(OWNER_ROWS_MIN, OWNER_ROWS_MAX)
-        val occupiedRows = minRowsToFit(getHomeApps(Profile.OWNER).size, getColumns(Profile.OWNER))
+        val occupiedRows = minRowsToFit(getHomePackages(Profile.OWNER).size, getColumns(Profile.OWNER))
         if (clamped < occupiedRows) return false
         prefs.edit().putInt(KEY_OWNER_ROWS, clamped).apply()
         return true
@@ -46,10 +46,7 @@ class HomeRepository(context: Context) {
 
     fun setOwnerDockSlots(value: Int): Boolean {
         val clamped = value.coerceIn(OWNER_DOCK_MIN, OWNER_DOCK_MAX)
-        if (clamped < appsRepository.getDockSlotCount().coerceAtMost(clamped)) {
-            // shrinking below currently-pinned count is blocked
-            if (appsRepository.getPinnedPackages().size > clamped) return false
-        }
+        if (appsRepository.getPinnedPackages().size > clamped) return false
         prefs.edit().putInt(KEY_OWNER_DOCK_SLOTS, clamped).apply()
         appsRepository.setDockSlotCount(clamped)
         return true
