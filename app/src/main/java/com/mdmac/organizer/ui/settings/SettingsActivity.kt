@@ -1,7 +1,9 @@
 package com.mdmac.organizer.ui.settings
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -55,9 +57,9 @@ class SettingsActivity : BaseActivity() {
         val rows = listOf(
             SettingsRow(
                 getString(R.string.settings_row_default_launcher_title),
-                { getString(R.string.settings_row_default_launcher_subtitle_stub) },
+                { defaultLauncherSubtitle() },
                 R.color.row_icon_launcher
-            ) { showComingSoon("Batch E") },
+            ) { openHomeAppPicker() },
             SettingsRow(
                 getString(R.string.settings_row_home_screen_title),
                 { getString(R.string.settings_row_home_screen_subtitle) },
@@ -168,6 +170,19 @@ class SettingsActivity : BaseActivity() {
         } else {
             "Not enabled — tap to set up"
         }
+
+    private fun isDefaultLauncher(): Boolean {
+        val homeIntent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
+        val resolved = packageManager.resolveActivity(homeIntent, PackageManager.MATCH_DEFAULT_ONLY)
+        return resolved?.activityInfo?.packageName == packageName
+    }
+
+    private fun defaultLauncherSubtitle(): String =
+        if (isDefaultLauncher()) "Currently your home app" else "Not set as default — tap to change"
+
+    private fun openHomeAppPicker() {
+        startActivity(Intent(Settings.ACTION_HOME_SETTINGS))
+    }
 
     private fun showThemeDialog() {
         val options = arrayOf(
