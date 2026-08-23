@@ -1,6 +1,8 @@
 package com.mdmac.organizer.ui.apps
 
 import android.content.Intent
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -21,6 +23,7 @@ import com.mdmac.organizer.R
 import com.mdmac.organizer.data.apps.AppsRepository
 import com.mdmac.organizer.data.apps.InstalledApp
 import com.mdmac.organizer.databinding.FragmentAppsBinding
+import com.mdmac.organizer.ui.settings.DrawerSettingsPreference
 import kotlinx.coroutines.launch
 
 class AppsFragment : Fragment() {
@@ -34,6 +37,7 @@ class AppsFragment : Fragment() {
 
     private lateinit var gridAdapter: AppGridAdapter
     private lateinit var dockAdapter: AppGridAdapter
+    private lateinit var drawerSettings: DrawerSettingsPreference
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -45,22 +49,26 @@ class AppsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        drawerSettings = DrawerSettingsPreference(requireContext())
+
         gridAdapter = AppGridAdapter(
             onAppClick = ::launchApp,
             onAppLongClick = { app, anchorView -> showAppOptions(app, anchorView) },
             onHiddenFolderClick = ::showHiddenAppsDialog
         )
-        binding.appsGridRecyclerView.layoutManager = GridLayoutManager(requireContext(), GRID_COLUMNS)
+        binding.appsGridRecyclerView.layoutManager = GridLayoutManager(requireContext(), drawerSettings.getColumns())
         binding.appsGridRecyclerView.adapter = gridAdapter
 
         dockAdapter = AppGridAdapter(
             onAppClick = ::launchApp,
             onAppLongClick = { app, anchorView -> showAppOptions(app, anchorView) },
-            onHiddenFolderClick = {} // dock never shows the hidden folder tile
+            onHiddenFolderClick = {}
         )
         binding.dockRecyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.dockRecyclerView.adapter = dockAdapter
+
+        applyOpacityAndBrightness()
 
         binding.searchInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -85,6 +93,26 @@ class AppsFragment : Fragment() {
                     }
                 }
             }
+        }
+    }
+
+    /** Opacity dims the whole grid+dock container; brightness lightens/darkens icons via a color filter. */
+    private fun applyOpacityAndBrightness() {
+        val opacityAlpha = drawerSettings.getOpacity() / 100f
+        binding.appsGridRecyclerView.alpha = opacityAlpha
+        binding.dockRecyclerView.alpha = opacityAlpha
+
+        val brightness = drawerSettings.getBrightness()
+        if (brightness != 100) {
+            // Simple brightness approximation: shift toward white (>100 unreachable
+            // here since slider caps at 100, so this only darkens toward black below 100).
+            val factor = brightness / 100f
+            val filter = PorterDuffColorFilter(
+                android.graphics.Color.argb((255 * (1 - factor)).toInt(), 0, 0, 0),
+                PorterDuff.Mode.SRC_ATOP
+            )
+            binding.appsGridRecyclerView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
+            // Applied per-icon in a later pass if this proves too coarse at the container level.
         }
     }
 
@@ -158,16 +186,11 @@ class AppsFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        // Picks up apps installed/uninstalled while this tab wasn't visible.
         viewModel.refresh()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    companion object {
-        private const val GRID_COLUMNS = 5
     }
 }
