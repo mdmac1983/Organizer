@@ -1,282 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="?attr/colorSurface">
 
-    <LinearLayout
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        app:title="@string/settings_title" />
+
+    <EditText
+        android:id="@+id/searchInput"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_margin="12dp"
+        android:background="@drawable/bg_search_bar_squared"
+        android:drawableStart="@android:drawable/ic_menu_search"
+        android:drawablePadding="8dp"
+        android:paddingHorizontal="12dp"
+        android:hint="@string/settings_search_hint"
+        android:inputType="text"
+        android:maxLines="1"
+        android:textColor="?attr/colorOnSurface"
+        android:textColorHint="?attr/colorOnSurfaceVariant" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:id="@+id/rowContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/footerText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:gravity="center"
+        android:padding="12dp"
+        android:textAppearance="@style/TextAppearance.Organizer.Caption" />
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:title="Settings"
-            app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Appearance"
-            android:textAppearance="?attr/textAppearanceTitleSmall"
-            android:padding="16dp" />
-
-        <com.google.android.material.button.MaterialButtonToggleGroup
-            android:id="@+id/appearanceToggleGroup"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="16dp"
-            app:singleSelection="true"
-            app:selectionRequired="true">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnThemeLight"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Light" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnThemeDark"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Dark" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnThemeSystem"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="System" />
-
-        </com.google.android.material.button.MaterialButtonToggleGroup>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?attr/colorOutlineVariant" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Security"
-            android:textAppearance="?attr/textAppearanceTitleSmall"
-            android:padding="16dp" />
-
-        <Button
-            android:id="@+id/btnChangePin"
-            style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:text="Change app PIN" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="16dp"
-            android:background="?attr/colorOutlineVariant" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Storage"
-            android:textAppearance="?attr/textAppearanceTitleSmall"
-            android:padding="16dp" />
-
-        <TextView
-            android:id="@+id/storagePermissionStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="16dp"
-            android:text="Storage permission: checking..."
-            android:textAppearance="?attr/textAppearanceBodyMedium" />
-
-        <Button
-            android:id="@+id/btnRequestStorage"
-            style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="Grant storage permission" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?attr/colorOutlineVariant" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Apps Tab"
-            android:textAppearance="?attr/textAppearanceTitleSmall"
-            android:padding="16dp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingHorizontal="16dp"
-            android:paddingBottom="16dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Dock slots"
-                android:textAppearance="?attr/textAppearanceBodyMedium" />
-
-            <ImageButton
-                android:id="@+id/btnDockSlotsMinus"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Decrease dock slots"
-                android:src="@android:drawable/ic_media_previous" />
-
-            <TextView
-                android:id="@+id/dockSlotsValue"
-                android:layout_width="32dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textAppearance="@style/TextAppearance.Organizer.Title"
-                tools:text="5" />
-
-            <ImageButton
-                android:id="@+id/btnDockSlotsPlus"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Increase dock slots"
-                android:src="@android:drawable/ic_media_next" />
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?attr/colorOutlineVariant" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Touch Blocker"
-            android:textAppearance="?attr/textAppearanceTitleSmall"
-            android:padding="16dp" />
-
-        <TextView
-            android:id="@+id/accessibilityStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="16dp"
-            android:text="Accessibility service: checking..."
-            android:textAppearance="?attr/textAppearanceBodyMedium" />
-
-        <Button
-            android:id="@+id/btnOpenAccessibilitySettings"
-            style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="Open Accessibility Settings" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingHorizontal="16dp"
-            android:paddingBottom="16dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Blocking active"
-                android:textAppearance="?attr/textAppearanceBodyMedium" />
-
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@+id/switchTouchBlocker"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?attr/colorOutlineVariant" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Device Admin"
-            android:textAppearance="?attr/textAppearanceTitleSmall"
-            android:padding="16dp" />
-
-        <TextView
-            android:id="@+id/deviceAdminStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="16dp"
-            android:text="Device admin: checking..."
-            android:textAppearance="?attr/textAppearanceBodyMedium" />
-
-        <Button
-            android:id="@+id/btnEnableDeviceAdmin"
-            style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="16dp"
-            android:text="Enable Device Admin" />
-
-        <Button
-            android:id="@+id/btnLockScreenNow"
-            style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="Lock Screen Now" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?attr/colorOutlineVariant" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Battery"
-            android:textAppearance="?attr/textAppearanceTitleSmall"
-            android:padding="16dp" />
-
-        <TextView
-            android:id="@+id/batteryStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="16dp"
-            android:text="Battery optimization: checking..."
-            android:textAppearance="?attr/textAppearanceBodyMedium" />
-
-        <Button
-            android:id="@+id/btnBatteryOptimization"
-            style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="Disable battery optimization" />
-
-    </LinearLayout>
-
-</ScrollView>
+</LinearLayout>
