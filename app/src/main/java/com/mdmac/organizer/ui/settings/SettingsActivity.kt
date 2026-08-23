@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.Toast
 import com.mdmac.organizer.MainActivity
 import com.mdmac.organizer.R
+import com.mdmac.organizer.accessibility.TouchBlockerService
 import com.mdmac.organizer.databinding.ActivitySettingsBinding
 import com.mdmac.organizer.databinding.ItemSettingsRowBinding
 import com.mdmac.organizer.theme.BaseActivity
@@ -89,9 +90,9 @@ class SettingsActivity : BaseActivity() {
             ) { showComingSoon("a later batch") },
             SettingsRow(
                 getString(R.string.settings_row_touch_block_title),
-                { getString(R.string.settings_row_touch_block_subtitle_stub) },
+                { touchBlockSubtitle() },
                 R.color.row_icon_touchblock
-            ) { showComingSoon("Batch D") },
+            ) { startActivity(Intent(this, LegacySettingsActivity::class.java)) },
             SettingsRow("Planner", { "Calendar and entries" }, R.color.row_icon_general) {
                 openTab(0)
             },
@@ -160,6 +161,13 @@ class SettingsActivity : BaseActivity() {
         ThemeMode.DARK -> getString(R.string.theme_dark)
         ThemeMode.LIGHT_GRAY -> getString(R.string.theme_light_gray)
     }
+
+    private fun touchBlockSubtitle(): String =
+        if (TouchBlockerService.instance != null) {
+            "Enabled — double-tap-and-hold anywhere to toggle"
+        } else {
+            "Not enabled — tap to set up"
+        }
 
     private fun showThemeDialog() {
         val options = arrayOf(
