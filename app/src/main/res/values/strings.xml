@@ -36,5 +36,4 @@
 <string name="theme_light">Light</string>
 <string name="theme_dark">Dark</string>
 <string name="theme_light_gray">Light gray</string>
-<string name="touch_blocker_service_description">Lets Simple Planner temporarily block screen touches for accessibility purposes.</string>
 </resources>
