@@ -51,7 +51,8 @@ class TouchBlockerService : AccessibilityService() {
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         // No event handling needed — this service exists only to obtain the
-        // accessibility-overlay window privilege used by the touch blocker.
+        // accessibility-overlay window privilege used by the touch blocker,
+        // and to expose performGlobalAction() for gesture actions.
     }
 
     override fun onInterrupt() {}
@@ -68,6 +69,9 @@ class TouchBlockerService : AccessibilityService() {
     fun setBlocking(enabled: Boolean) {
         if (enabled) showOverlay() else hideOverlay()
     }
+
+    /** Exposes AccessibilityService's protected performGlobalAction() for the gesture system. */
+    fun triggerGlobalAction(action: Int): Boolean = performGlobalAction(action)
 
     private fun showOverlay() {
         if (overlayView != null) return
@@ -150,6 +154,9 @@ class TouchBlockerService : AccessibilityService() {
     companion object {
         var instance: TouchBlockerService? = null
             private set
+
+        /** Runs a global system action (notifications, quick settings, recents, lock) via the running service, if enabled. */
+        fun runGlobalAction(action: Int): Boolean = instance?.triggerGlobalAction(action) ?: false
 
         private const val ACTION_DISABLE_BLOCKING =
             "com.mdmac.organizer.action.DISABLE_TOUCH_BLOCKER"
