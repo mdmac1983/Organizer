@@ -1,40 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Type scale: Caption 12sp / Body 14sp / Title 16sp / Headline 20sp / Display 24sp -->
+    <!-- Type scale: Caption 12sp / Body 14sp / Title 16sp / Headline 20sp / Display 24sp
+         Colors reference theme attrs, so one set of styles works for all
+         three themes — no more day/night duplication needed. -->
     <style name="TextAppearance.Organizer.Caption" parent="TextAppearance.Material3.BodySmall">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">12sp</item>
-        <item name="android:textColor">@color/teal_deep</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
     <style name="TextAppearance.Organizer.Body" parent="TextAppearance.Material3.BodyMedium">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/teal_deep</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
     <style name="TextAppearance.Organizer.Title" parent="TextAppearance.Material3.TitleMedium">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:textColor">@color/teal_deep</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
     <style name="TextAppearance.Organizer.Headline" parent="TextAppearance.Material3.TitleLarge">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">20sp</item>
-        <item name="android:textColor">@color/teal_deep</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
     <style name="TextAppearance.Organizer.Display" parent="TextAppearance.Material3.HeadlineSmall">
         <item name="android:fontFamily">sans-serif</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">24sp</item>
-        <item name="android:textColor">@color/teal_deep</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
     <style name="TabTextAppearance" parent="TextAppearance.Design.Tab">
@@ -44,17 +46,21 @@
         <item name="textAllCaps">false</item>
     </style>
 
-    <style name="DayOfWeekHeaderLabel">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:gravity">center</item>
-        <item name="android:paddingVertical">4dp</item>
-        <item name="android:textAppearance">?attr/textAppearanceCaption</item>
-        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    <style name="Theme.Organizer.Base" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.Organizer.Caption</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.Organizer.Caption</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.Organizer.Body</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.Organizer.Title</item>
+        <item name="textAppearanceTitleSmall">@style/TextAppearance.Organizer.Body</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.Organizer.Title</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.Organizer.Headline</item>
+        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.Organizer.Display</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
     </style>
 
-    <style name="Theme.Organizer" parent="Theme.Material3.Light.NoActionBar">
+    <style name="Theme.Organizer.Light" parent="Theme.Organizer.Base">
         <item name="colorPrimary">@color/teal_primary</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorPrimaryContainer">@color/teal_container_light</item>
@@ -68,17 +74,38 @@
         <item name="colorOutline">@color/teal_muted</item>
         <item name="colorOutlineVariant">@color/gray_300</item>
         <item name="android:windowBackground">@color/white</item>
-        <item name="android:statusBarColor">?attr/colorSurface</item>
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="fontFamily">sans-serif</item>
-        <item name="textAppearanceLabelSmall">@style/TextAppearance.Organizer.Caption</item>
-        <item name="textAppearanceBodySmall">@style/TextAppearance.Organizer.Caption</item>
-        <item name="textAppearanceBodyMedium">@style/TextAppearance.Organizer.Body</item>
-        <item name="textAppearanceBodyLarge">@style/TextAppearance.Organizer.Title</item>
-        <item name="textAppearanceTitleSmall">@style/TextAppearance.Organizer.Body</item>
-        <item name="textAppearanceTitleMedium">@style/TextAppearance.Organizer.Title</item>
-        <item name="textAppearanceTitleLarge">@style/TextAppearance.Organizer.Headline</item>
-        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.Organizer.Display</item>
+    </style>
+
+    <style name="Theme.Organizer.Dark" parent="Theme.Organizer.Base">
+        <item name="colorPrimary">@color/teal_dark_variant</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/teal_container_dark</item>
+        <item name="colorOnPrimaryContainer">@color/white</item>
+        <item name="colorSecondary">@color/teal_dark_variant</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSurface">@color/dark_surface</item>
+        <item name="colorOnSurface">@color/white</item>
+        <item name="colorSurfaceVariant">@color/dark_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/white</item>
+        <item name="colorOutline">@color/teal_muted</item>
+        <item name="colorOutlineVariant">@color/dark_surface_variant</item>
+        <item name="android:windowBackground">@color/dark_surface</item>
+    </style>
+
+    <style name="Theme.Organizer.LightGray" parent="Theme.Organizer.Base">
+        <item name="colorPrimary">@color/teal_primary</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/teal_container_light</item>
+        <item name="colorOnPrimaryContainer">@color/teal_deep</item>
+        <item name="colorSecondary">@color/teal_dark_variant</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSurface">@color/gray_50</item>
+        <item name="colorOnSurface">@color/teal_deep</item>
+        <item name="colorSurfaceVariant">@color/gray_100</item>
+        <item name="colorOnSurfaceVariant">@color/teal_deep</item>
+        <item name="colorOutline">@color/teal_muted</item>
+        <item name="colorOutlineVariant">@color/gray_300</item>
+        <item name="android:windowBackground">@color/gray_50</item>
     </style>
 
 </resources>
