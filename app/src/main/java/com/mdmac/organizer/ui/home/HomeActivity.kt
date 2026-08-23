@@ -3,14 +3,17 @@ package com.mdmac.organizer.ui.home
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
-import androidx.core.animation.doOnEnd
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.mdmac.organizer.accessibility.TouchBlockerService
 import com.mdmac.organizer.data.apps.AppsRepository
 import com.mdmac.organizer.data.apps.InstalledApp
 import com.mdmac.organizer.data.home.HomeRepository
@@ -43,11 +46,18 @@ class HomeActivity : BaseActivity() {
 
     private lateinit var scaleDetector: ScaleGestureDetector
     private lateinit var gestureDetector: GestureDetector
+    private val touchBlockHandler = Handler(Looper.getMainLooper())
 
     private lateinit var gridAdapter: AppGridAdapter
     private lateinit var dockAdapter: AppGridAdapter
 
     private var drawerOpen = false
+
+    // --- Touch-block gesture state: double-tap-and-hold, tracked independently of GestureDetector ---
+    private var lastTapUpTime = 0L
+    private var lastTapX = 0f
+    private var lastTapY = 0f
+    private var touchBlockHoldRunnable: Runnable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -135,7 +145,7 @@ class HomeActivity : BaseActivity() {
         packageManager.getLaunchIntentForPackage(app.packageName)?.let { startActivity(it) }
     }
 
-    // --- Drawer overlay (app drawer opens by sliding AppsFragment up over Home) ---
+    // --- Drawer overlay ---
 
     private fun openDrawer() {
         if (drawerOpen) return
@@ -157,7 +167,8 @@ class HomeActivity : BaseActivity() {
             .start()
     }
 
-    // --- Gestures: pinch-out (profile toggle) + swipe/double-tap/pinch-in (mappable) ---
+    // --- Gestures: pinch-out (profile toggle), swipe/double-tap/pinch-in (mappable),
+    //     and double-tap-and-hold (touch-block trigger, handled independently below) ---
 
     private fun setupGestures() {
         scaleDetector = ScaleGestureDetector(this, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
@@ -198,7 +209,6 @@ class HomeActivity : BaseActivity() {
                     if (dx > 0) runGestureAction(GestureType.SWIPE_RIGHT) else runGestureAction(GestureType.SWIPE_LEFT)
                 } else {
                     if (dy < 0) {
-                        // swipe up: open drawer directly unless remapped to something else
                         if (gesturePreference.getAction(GestureType.SWIPE_UP) == GestureAction.APP_DRAWER) {
                             openDrawer()
                         } else {
@@ -213,10 +223,47 @@ class HomeActivity : BaseActivity() {
         })
 
         binding.root.setOnTouchListener { _, event ->
+            handleTouchBlockGesture(event)
             scaleDetector.onTouchEvent(event)
             gestureDetector.onTouchEvent(event)
             true
         }
+    }
+
+    /** Double-tap-and-hold: a second tap-down that stays down past the hold threshold toggles touch-block. */
+    private fun handleTouchBlockGesture(event: MotionEvent) {
+        when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                val now = System.currentTimeMillis()
+                val withinTimeout = (now - lastTapUpTime) in 0..DOUBLE_TAP_TIMEOUT_MS
+                val withinSlop = abs(event.x - lastTapX) < TAP_SLOP_PX && abs(event.y - lastTapY) < TAP_SLOP_PX
+                if (withinTimeout && withinSlop) {
+                    val runnable = Runnable { toggleTouchBlocker() }
+                    touchBlockHoldRunnable = runnable
+                    touchBlockHandler.postDelayed(runnable, HOLD_THRESHOLD_MS)
+                }
+            }
+            MotionEvent.ACTION_UP -> {
+                touchBlockHoldRunnable?.let { touchBlockHandler.removeCallbacks(it) }
+                touchBlockHoldRunnable = null
+                lastTapUpTime = System.currentTimeMillis()
+                lastTapX = event.x
+                lastTapY = event.y
+            }
+            MotionEvent.ACTION_CANCEL -> {
+                touchBlockHoldRunnable?.let { touchBlockHandler.removeCallbacks(it) }
+                touchBlockHoldRunnable = null
+            }
+        }
+    }
+
+    private fun toggleTouchBlocker() {
+        val service = TouchBlockerService.instance
+        if (service == null) {
+            Toast.makeText(this, "Enable the accessibility service in Settings first", Toast.LENGTH_LONG).show()
+            return
+        }
+        service.setBlocking(!service.isBlocking())
     }
 
     private fun runGestureAction(type: GestureType) {
@@ -260,6 +307,9 @@ class HomeActivity : BaseActivity() {
         private const val PINCH_OUT_THRESHOLD = 1.15f
         private const val PINCH_IN_THRESHOLD = 0.85f
         private const val SWIPE_MIN_DISTANCE = 100f
+        private const val DOUBLE_TAP_TIMEOUT_MS = 300L
+        private const val TAP_SLOP_PX = 60f
+        private const val HOLD_THRESHOLD_MS = 500L
         private const val MENU_WALLPAPERS = 1
         private const val MENU_HOME_SETTINGS = 2
     }
