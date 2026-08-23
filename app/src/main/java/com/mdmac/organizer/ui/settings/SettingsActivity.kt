@@ -14,6 +14,8 @@ import com.mdmac.organizer.databinding.ItemSettingsRowBinding
 import com.mdmac.organizer.theme.BaseActivity
 import com.mdmac.organizer.theme.ThemeMode
 import com.mdmac.organizer.theme.ThemePreference
+import com.mdmac.organizer.ui.gestures.GesturesSettingsActivity
+import com.mdmac.organizer.ui.wallpaper.WallpaperPickerActivity
 import androidx.appcompat.app.AlertDialog
 
 private data class SettingsRow(
@@ -69,12 +71,12 @@ class SettingsActivity : BaseActivity() {
                 getString(R.string.settings_row_gestures_title),
                 { getString(R.string.settings_row_gestures_subtitle) },
                 R.color.row_icon_gestures
-            ) { showComingSoon("Batch C") },
+            ) { startActivity(Intent(this, GesturesSettingsActivity::class.java)) },
             SettingsRow(
                 getString(R.string.settings_row_wallpaper_title),
                 { getString(R.string.settings_row_wallpaper_subtitle) },
                 R.color.row_icon_wallpaper
-            ) { showComingSoon("Batch C") },
+            ) { startActivity(Intent(this, WallpaperPickerActivity::class.java)) },
             SettingsRow(
                 getString(R.string.settings_row_theme_title),
                 { themeSubtitle() },
