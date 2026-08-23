@@ -76,6 +76,14 @@
             android:name=".ui.settings.AppDrawerSettingsActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".ui.gestures.GesturesSettingsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.wallpaper.WallpaperPickerActivity"
+            android:exported="false" />
+
         <receiver
             android:name=".admin.PlannerDeviceAdminReceiver"
             android:exported="true"
