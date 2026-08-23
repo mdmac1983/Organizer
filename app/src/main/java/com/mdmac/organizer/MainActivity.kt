@@ -1,16 +1,14 @@
 package com.mdmac.organizer
 
-import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.mdmac.organizer.databinding.ActivityMainBinding
+import com.mdmac.organizer.theme.BaseActivity
 import com.mdmac.organizer.ui.OrganizerPagerAdapter
-import com.mdmac.organizer.ui.settings.SettingsActivity
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -20,27 +18,24 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.viewPager.adapter = OrganizerPagerAdapter(this)
-        binding.viewPager.offscreenPageLimit = 4 // keep all 5 tabs alive
+        binding.viewPager.offscreenPageLimit = 3
 
         val tabTitles = listOf(
             getString(R.string.tab_planner),
             getString(R.string.tab_contacts),
             getString(R.string.tab_passwords),
-            getString(R.string.tab_notes),
-            getString(R.string.tab_apps)
+            getString(R.string.tab_notes)
         )
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = tabTitles[position]
         }.attach()
 
-        binding.toolbar.setOnMenuItemClickListener { item ->
-            if (item.itemId == R.id.action_settings) {
-                startActivity(Intent(this, SettingsActivity::class.java))
-                true
-            } else {
-                false
-            }
-        }
+        val startTab = intent.getIntExtra(EXTRA_START_TAB, 0)
+        binding.viewPager.setCurrentItem(startTab, false)
+    }
+
+    companion object {
+        const val EXTRA_START_TAB = "start_tab"
     }
 }
