@@ -7,6 +7,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
+import com.mdmac.organizer.MainActivity
 import com.mdmac.organizer.R
 import com.mdmac.organizer.databinding.ActivitySettingsBinding
 import com.mdmac.organizer.databinding.ItemSettingsRowBinding
@@ -58,12 +59,12 @@ class SettingsActivity : BaseActivity() {
                 getString(R.string.settings_row_home_screen_title),
                 { getString(R.string.settings_row_home_screen_subtitle) },
                 R.color.row_icon_home
-            ) { showComingSoon("Batch B") },
+            ) { startActivity(Intent(this, HomeScreenSettingsActivity::class.java)) },
             SettingsRow(
                 getString(R.string.settings_row_app_drawer_title),
                 { getString(R.string.settings_row_app_drawer_subtitle) },
                 R.color.row_icon_drawer
-            ) { showComingSoon("Batch B") },
+            ) { startActivity(Intent(this, AppDrawerSettingsActivity::class.java)) },
             SettingsRow(
                 getString(R.string.settings_row_gestures_title),
                 { getString(R.string.settings_row_gestures_subtitle) },
@@ -89,6 +90,18 @@ class SettingsActivity : BaseActivity() {
                 { getString(R.string.settings_row_touch_block_subtitle_stub) },
                 R.color.row_icon_touchblock
             ) { showComingSoon("Batch D") },
+            SettingsRow("Planner", { "Calendar and entries" }, R.color.row_icon_general) {
+                openTab(0)
+            },
+            SettingsRow("Contacts", { "Saved contacts" }, R.color.row_icon_general) {
+                openTab(1)
+            },
+            SettingsRow("Passwords", { "Encrypted password entries" }, R.color.row_icon_general) {
+                openTab(2)
+            },
+            SettingsRow("Notes", { "Notes and folders" }, R.color.row_icon_general) {
+                openTab(3)
+            },
             SettingsRow(
                 getString(R.string.settings_row_general_title),
                 { getString(R.string.settings_row_general_subtitle) },
@@ -108,6 +121,12 @@ class SettingsActivity : BaseActivity() {
             binding.rowContainer.addView(rowBinding.root)
             rowViews.add(row to rowBinding.root)
         }
+    }
+
+    private fun openTab(index: Int) {
+        startActivity(Intent(this, MainActivity::class.java).apply {
+            putExtra(MainActivity.EXTRA_START_TAB, index)
+        })
     }
 
     private fun refreshSubtitles() {
