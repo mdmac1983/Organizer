@@ -38,11 +38,15 @@
             android:name=".ui.onboarding.PinSetupActivity"
             android:exported="false" />
 
-        <!-- singleTask + HOME/DEFAULT so this can be set as the device's
-             Home app; exported is required for the system to launch it
-             from the Home-app picker. -->
         <activity
             android:name=".MainActivity"
+            android:exported="false" />
+
+        <!-- The actual Home surface — singleTask + HOME/DEFAULT so it can be
+             set as the device's Home app. Shows Guest's grid by default;
+             pinch-out toggles to Owner. -->
+        <activity
+            android:name=".ui.home.HomeActivity"
             android:exported="true"
             android:launchMode="singleTask">
             <intent-filter>
@@ -62,6 +66,14 @@
 
         <activity
             android:name=".ui.settings.LegacySettingsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.settings.HomeScreenSettingsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.settings.AppDrawerSettingsActivity"
             android:exported="false" />
 
         <receiver
