@@ -84,6 +84,10 @@
             android:name=".ui.wallpaper.WallpaperPickerActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".ui.onboarding.OnboardingActivity"
+            android:exported="false" />
+
         <receiver
             android:name=".admin.PlannerDeviceAdminReceiver"
             android:exported="true"
