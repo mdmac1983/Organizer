@@ -19,12 +19,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.mdmac.organizer.R
 import com.mdmac.organizer.data.apps.AppsRepository
 import com.mdmac.organizer.data.apps.InstalledApp
 import com.mdmac.organizer.data.home.HomeRepository
 import com.mdmac.organizer.databinding.FragmentAppsBinding
+import com.mdmac.organizer.profile.Profile
 import com.mdmac.organizer.profile.ProfileManager
 import com.mdmac.organizer.ui.settings.DrawerSettingsPreference
 import kotlinx.coroutines.launch
@@ -39,7 +39,6 @@ class AppsFragment : Fragment() {
     }
 
     private lateinit var gridAdapter: AppGridAdapter
-    private lateinit var dockAdapter: AppGridAdapter
     private lateinit var drawerSettings: DrawerSettingsPreference
     private lateinit var homeRepository: HomeRepository
     private lateinit var profileManager: ProfileManager
@@ -66,15 +65,6 @@ class AppsFragment : Fragment() {
         binding.appsGridRecyclerView.layoutManager = GridLayoutManager(requireContext(), drawerSettings.getColumns())
         binding.appsGridRecyclerView.adapter = gridAdapter
 
-        dockAdapter = AppGridAdapter(
-            onAppClick = ::launchApp,
-            onAppLongClick = { app, anchorView -> showAppOptions(app, anchorView) },
-            onHiddenFolderClick = {}
-        )
-        binding.dockRecyclerView.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        binding.dockRecyclerView.adapter = dockAdapter
-
         applyOpacityAndBrightness()
 
         binding.searchInput.addTextChangedListener(object : TextWatcher {
@@ -87,32 +77,16 @@ class AppsFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.gridApps.collect { apps ->
-                        submitGrid(apps)
-                    }
-                }
-                launch {
-                    viewModel.dockApps.collect { dockApps ->
-                        binding.dockRecyclerView.visibility =
-                            if (dockApps.isEmpty()) View.GONE else View.VISIBLE
-                        dockAdapter.submitList(dockApps.map { AppGridItem.AppEntry(it) })
-                    }
+                viewModel.gridApps.collect { apps ->
+                    submitGrid(apps)
                 }
             }
         }
     }
 
-    /**
-     * Icon opacity dims the grid+dock content; brightness lightens/darkens icons
-     * (currently a stored value only, no visible effect yet); background transparency
-     * blends the theme's surface color down toward fully see-through, so the Home
-     * wallpaper shows through behind the drawer as it's dragged down.
-     */
     private fun applyOpacityAndBrightness() {
         val opacityAlpha = drawerSettings.getOpacity() / 100f
         binding.appsGridRecyclerView.alpha = opacityAlpha
-        binding.dockRecyclerView.alpha = opacityAlpha
 
         val transparency = drawerSettings.getBackgroundTransparency()
         val typedValue = TypedValue()
@@ -128,15 +102,24 @@ class AppsFragment : Fragment() {
         binding.root.setBackgroundColor(blended)
     }
 
+    /** Owner sees every non-hidden app; Guest is restricted to the separately-curated drawer list. */
     private fun submitGrid(apps: List<InstalledApp>) {
-        val hiddenCount = viewModel.hiddenApps.value.size
+        val profile = profileManager.getCurrentProfile()
+        val visibleApps = if (profile == Profile.GUEST) {
+            val allowed = homeRepository.getGuestDrawerPackages()
+            apps.filter { it.packageName in allowed }
+        } else {
+            apps
+        }
+
+        val hiddenCount = if (profile == Profile.OWNER) viewModel.hiddenApps.value.size else 0
         val items = mutableListOf<AppGridItem>()
-        items.addAll(apps.map { AppGridItem.AppEntry(it) })
+        items.addAll(visibleApps.map { AppGridItem.AppEntry(it) })
         if (hiddenCount > 0) {
             items.add(AppGridItem.HiddenFolder(hiddenCount))
         }
         gridAdapter.submitList(items)
-        binding.emptyView.visibility = if (apps.isEmpty() && hiddenCount == 0) View.VISIBLE else View.GONE
+        binding.emptyView.visibility = if (visibleApps.isEmpty() && hiddenCount == 0) View.VISIBLE else View.GONE
     }
 
     private fun launchApp(app: InstalledApp) {
