@@ -3,14 +3,17 @@ package com.mdmac.organizer.data.apps
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
 
 class AppsRepository(context: Context) {
 
     private val appContext = context.applicationContext
     private val packageManager = appContext.packageManager
     private val prefs = appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private val customization = AppCustomizationPreference(appContext)
 
     /** Every launchable app on the device except this app itself, sorted by label. */
     suspend fun getLaunchableApps(): List<InstalledApp> = withContext(Dispatchers.IO) {
@@ -26,10 +29,16 @@ class AppsRepository(context: Context) {
             .distinctBy { it.activityInfo.packageName }
             .map { resolveInfo ->
                 val packageName = resolveInfo.activityInfo.packageName
+                val customIconPath = customization.getCustomIconPath(packageName)
+                val icon: Drawable = if (customIconPath != null && File(customIconPath).exists()) {
+                    Drawable.createFromPath(customIconPath) ?: resolveInfo.loadIcon(packageManager)
+                } else {
+                    resolveInfo.loadIcon(packageManager)
+                }
                 InstalledApp(
                     packageName = packageName,
-                    label = resolveInfo.loadLabel(packageManager).toString(),
-                    icon = resolveInfo.loadIcon(packageManager),
+                    label = customization.getCustomLabel(packageName) ?: resolveInfo.loadLabel(packageManager).toString(),
+                    icon = icon,
                     isPinned = pinned.contains(packageName),
                     isHidden = hidden.contains(packageName)
                 )
@@ -54,7 +63,6 @@ class AppsRepository(context: Context) {
         val current = getHiddenPackages().toMutableSet()
         if (hidden) {
             current.add(packageName)
-            // An app can't stay pinned to the dock while hidden.
             setPinned(packageName, false)
         } else {
             current.remove(packageName)
