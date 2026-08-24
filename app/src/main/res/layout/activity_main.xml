@@ -38,11 +38,11 @@
         android:layout_weight="1">
 
         <ImageView
+            android:id="@+id/tabBackgroundImageView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:contentDescription="@null"
-            android:src="@drawable/tab_background" />
+            android:contentDescription="@null" />
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/viewPager"
@@ -55,12 +55,12 @@
         android:id="@+id/footerText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@OrionMD 2026"
+        android:text="@string/settings_footer"
         android:textSize="14sp"
         android:textStyle="bold"
         android:textAlignment="center"
         android:paddingTop="6dp"
         android:paddingBottom="6dp"
-        android:textColor="@color/black" />
+        android:textColor="?attr/colorOnSurface" />
 
 </LinearLayout>
