@@ -2,12 +2,11 @@ package com.mdmac.organizer.ui.onboarding
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.mdmac.organizer.MainActivity
 import com.mdmac.organizer.databinding.ActivityPinSetupBinding
 import com.mdmac.organizer.security.PinManager
+import com.mdmac.organizer.theme.BaseActivity
 
-class PinSetupActivity : AppCompatActivity() {
+class PinSetupActivity : BaseActivity() {
 
     private lateinit var binding: ActivityPinSetupBinding
     private lateinit var pinManager: PinManager
@@ -28,7 +27,7 @@ class PinSetupActivity : AppCompatActivity() {
                 new != confirm -> showError("PINs don't match")
                 else -> {
                     pinManager.setPin(new)
-                    startActivity(Intent(this, MainActivity::class.java))
+                    startActivity(Intent(this, OnboardingActivity::class.java))
                     finish()
                 }
             }
