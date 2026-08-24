@@ -1,13 +1,13 @@
 package com.mdmac.organizer.ui.apps
 
 import android.content.Intent
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -96,24 +96,30 @@ class AppsFragment : Fragment() {
         }
     }
 
-    /** Opacity dims the whole grid+dock container; brightness lightens/darkens icons via a color filter. */
+    /**
+     * Icon opacity dims the grid+dock content; brightness lightens/darkens icons
+     * (currently a stored value only, no visible effect yet — flagged in Batch C
+     * as needing a per-icon color filter pass); background transparency blends
+     * the theme's surface color down toward fully see-through, so the Home
+     * wallpaper shows through behind the drawer as it's dragged down.
+     */
     private fun applyOpacityAndBrightness() {
         val opacityAlpha = drawerSettings.getOpacity() / 100f
         binding.appsGridRecyclerView.alpha = opacityAlpha
         binding.dockRecyclerView.alpha = opacityAlpha
 
-        val brightness = drawerSettings.getBrightness()
-        if (brightness != 100) {
-            // Simple brightness approximation: shift toward white (>100 unreachable
-            // here since slider caps at 100, so this only darkens toward black below 100).
-            val factor = brightness / 100f
-            val filter = PorterDuffColorFilter(
-                android.graphics.Color.argb((255 * (1 - factor)).toInt(), 0, 0, 0),
-                PorterDuff.Mode.SRC_ATOP
-            )
-            binding.appsGridRecyclerView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
-            // Applied per-icon in a later pass if this proves too coarse at the container level.
-        }
+        val transparency = drawerSettings.getBackgroundTransparency()
+        val typedValue = TypedValue()
+        requireContext().theme.resolveAttribute(com.google.android.material.R.attr.colorSurface, typedValue, true)
+        val surfaceColor = typedValue.data
+        val alphaChannel = (255 * (transparency / 100f)).toInt().coerceIn(0, 255)
+        val blended = Color.argb(
+            alphaChannel,
+            Color.red(surfaceColor),
+            Color.green(surfaceColor),
+            Color.blue(surfaceColor)
+        )
+        binding.root.setBackgroundColor(blended)
     }
 
     private fun submitGrid(apps: List<InstalledApp>) {
