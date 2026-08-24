@@ -43,6 +43,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".ui.onboarding.LauncherSetupActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".MainActivity"
             android:exported="false" />
 
