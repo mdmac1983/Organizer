@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/action_add_to_home"
+        android:title="Add to Home" />
+    <item
         android:id="@+id/action_pin_toggle"
         android:title="Pin to Dock" />
     <item
