@@ -17,6 +17,7 @@ import com.mdmac.organizer.databinding.ItemSettingsRowBinding
 import com.mdmac.organizer.theme.BaseActivity
 import com.mdmac.organizer.theme.ThemeMode
 import com.mdmac.organizer.theme.ThemePreference
+import com.mdmac.organizer.ui.apps.AppsSettingsActivity
 import com.mdmac.organizer.ui.gestures.GesturesSettingsActivity
 import com.mdmac.organizer.ui.wallpaper.WallpaperPickerActivity
 import androidx.appcompat.app.AlertDialog
@@ -89,7 +90,7 @@ class SettingsActivity : BaseActivity() {
                 getString(R.string.settings_row_apps_title),
                 { getString(R.string.settings_row_apps_subtitle) },
                 R.color.row_icon_apps
-            ) { showComingSoon("a later batch") },
+            ) { startActivity(Intent(this, AppsSettingsActivity::class.java)) },
             SettingsRow(
                 getString(R.string.settings_row_touch_block_title),
                 { touchBlockSubtitle() },
