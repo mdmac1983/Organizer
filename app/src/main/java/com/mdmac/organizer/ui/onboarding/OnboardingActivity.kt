@@ -5,14 +5,11 @@ import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import com.mdmac.organizer.MainActivity
-import com.mdmac.organizer.R
 import com.mdmac.organizer.accessibility.TouchBlockerService
 import com.mdmac.organizer.admin.PlannerDeviceAdminReceiver
 import com.mdmac.organizer.databinding.ActivityOnboardingBinding
@@ -30,7 +27,6 @@ private data class OnboardingRow(
 class OnboardingActivity : BaseActivity() {
 
     private lateinit var binding: ActivityOnboardingBinding
-    private lateinit var onboardingPreference: OnboardingPreference
     private lateinit var devicePolicyManager: DevicePolicyManager
     private lateinit var deviceAdminComponent: ComponentName
     private val rowBindings = mutableListOf<Pair<OnboardingRow, ItemOnboardingRowBinding>>()
@@ -48,7 +44,6 @@ class OnboardingActivity : BaseActivity() {
         binding = ActivityOnboardingBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        onboardingPreference = OnboardingPreference(this)
         devicePolicyManager = getSystemService(DevicePolicyManager::class.java)
         deviceAdminComponent = ComponentName(this, PlannerDeviceAdminReceiver::class.java)
 
@@ -83,14 +78,6 @@ class OnboardingActivity : BaseActivity() {
                 ) { notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS) }
             )
         }
-
-        rows.add(
-            OnboardingRow(
-                "Default launcher",
-                { if (isDefaultLauncher()) "Set" else "Set Simple Planner as your Home app" },
-                "Set"
-            ) { startActivity(Intent(Settings.ACTION_HOME_SETTINGS)) }
-        )
 
         rows.add(
             OnboardingRow(
@@ -134,12 +121,6 @@ class OnboardingActivity : BaseActivity() {
             ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
                 PackageManager.PERMISSION_GRANTED
 
-    private fun isDefaultLauncher(): Boolean {
-        val homeIntent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
-        val resolved = packageManager.resolveActivity(homeIntent, PackageManager.MATCH_DEFAULT_ONLY)
-        return resolved?.activityInfo?.packageName == packageName
-    }
-
     private fun requestDeviceAdmin() {
         val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
             putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, deviceAdminComponent)
@@ -152,8 +133,7 @@ class OnboardingActivity : BaseActivity() {
     }
 
     private fun finishOnboarding() {
-        onboardingPreference.setComplete()
-        startActivity(Intent(this, MainActivity::class.java))
+        startActivity(Intent(this, LauncherSetupActivity::class.java))
         finish()
     }
 }
