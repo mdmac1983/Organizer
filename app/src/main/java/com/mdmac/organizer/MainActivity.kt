@@ -1,5 +1,6 @@
 package com.mdmac.organizer
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
@@ -7,6 +8,8 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.mdmac.organizer.databinding.ActivityMainBinding
 import com.mdmac.organizer.theme.BaseActivity
 import com.mdmac.organizer.ui.OrganizerPagerAdapter
+import com.mdmac.organizer.ui.pinned.PinnedActivity
+import com.mdmac.organizer.ui.settings.SettingsActivity
 
 class MainActivity : BaseActivity() {
 
@@ -33,6 +36,20 @@ class MainActivity : BaseActivity() {
 
         val startTab = intent.getIntExtra(EXTRA_START_TAB, 0)
         binding.viewPager.setCurrentItem(startTab, false)
+
+        binding.toolbar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_pinned -> {
+                    startActivity(Intent(this, PinnedActivity::class.java))
+                    true
+                }
+                R.id.action_settings -> {
+                    startActivity(Intent(this, SettingsActivity::class.java))
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
     companion object {
