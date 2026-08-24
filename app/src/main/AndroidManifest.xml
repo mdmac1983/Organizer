@@ -92,6 +92,10 @@
             android:name=".ui.apps.AppsSettingsActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".ui.about.AboutActivity"
+            android:exported="false" />
+
         <receiver
             android:name=".admin.PlannerDeviceAdminReceiver"
             android:exported="true"
