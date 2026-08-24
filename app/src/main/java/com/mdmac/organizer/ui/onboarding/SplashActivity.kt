@@ -4,12 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import androidx.appcompat.app.AppCompatActivity
 import com.mdmac.organizer.MainActivity
 import com.mdmac.organizer.databinding.ActivitySplashBinding
+import com.mdmac.organizer.onboarding.OnboardingPreference
 import com.mdmac.organizer.security.PinManager
+import com.mdmac.organizer.theme.BaseActivity
 
-class SplashActivity : AppCompatActivity() {
+class SplashActivity : BaseActivity() {
 
     private lateinit var binding: ActivitySplashBinding
 
@@ -20,10 +21,12 @@ class SplashActivity : AppCompatActivity() {
 
         Handler(Looper.getMainLooper()).postDelayed({
             val pinManager = PinManager(this)
-            val next = if (pinManager.isPinSet()) {
-                Intent(this, MainActivity::class.java)
-            } else {
-                Intent(this, PinSetupActivity::class.java)
+            val onboardingPreference = OnboardingPreference(this)
+
+            val next = when {
+                !pinManager.isPinSet() -> Intent(this, PinSetupActivity::class.java)
+                !onboardingPreference.isComplete() -> Intent(this, OnboardingActivity::class.java)
+                else -> Intent(this, MainActivity::class.java)
             }
             startActivity(next)
             finish()
