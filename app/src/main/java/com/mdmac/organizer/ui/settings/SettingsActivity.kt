@@ -17,6 +17,7 @@ import com.mdmac.organizer.databinding.ItemSettingsRowBinding
 import com.mdmac.organizer.theme.BaseActivity
 import com.mdmac.organizer.theme.ThemeMode
 import com.mdmac.organizer.theme.ThemePreference
+import com.mdmac.organizer.ui.about.AboutActivity
 import com.mdmac.organizer.ui.apps.AppsSettingsActivity
 import com.mdmac.organizer.ui.gestures.GesturesSettingsActivity
 import com.mdmac.organizer.ui.wallpaper.WallpaperPickerActivity
@@ -43,7 +44,6 @@ class SettingsActivity : BaseActivity() {
         themePreference = ThemePreference(this)
 
         binding.toolbar.setNavigationOnClickListener { finish() }
-        binding.footerText.text = getString(R.string.settings_footer)
 
         buildRows()
         setupSearch()
@@ -56,6 +56,11 @@ class SettingsActivity : BaseActivity() {
 
     private fun buildRows() {
         val rows = listOf(
+            SettingsRow(
+                "About",
+                { "OrionMD — Simple Planner" },
+                R.color.row_icon_general
+            ) { startActivity(Intent(this, AboutActivity::class.java)) },
             SettingsRow(
                 getString(R.string.settings_row_default_launcher_title),
                 { defaultLauncherSubtitle() },
