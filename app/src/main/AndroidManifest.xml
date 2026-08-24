@@ -39,6 +39,10 @@
             android:exported="false" />
 
         <activity
+            android:name=".ui.onboarding.OnboardingActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".MainActivity"
             android:exported="false" />
 
@@ -85,7 +89,7 @@
             android:exported="false" />
 
         <activity
-            android:name=".ui.onboarding.OnboardingActivity"
+            android:name=".ui.apps.AppsSettingsActivity"
             android:exported="false" />
 
         <receiver
