@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.mdmac.organizer.accessibility.TouchBlockerService
 import com.mdmac.organizer.data.apps.AppsRepository
 import com.mdmac.organizer.data.apps.InstalledApp
@@ -53,7 +54,6 @@ class HomeActivity : BaseActivity() {
 
     private var drawerOpen = false
 
-    // --- Touch-block gesture state: double-tap-and-hold, tracked independently of GestureDetector ---
     private var lastTapUpTime = 0L
     private var lastTapX = 0f
     private var lastTapY = 0f
@@ -73,7 +73,6 @@ class HomeActivity : BaseActivity() {
 
         setupGrids()
         setupGestures()
-        setupLongPress()
         loadWallpaper()
         loadHome()
     }
@@ -145,8 +144,6 @@ class HomeActivity : BaseActivity() {
         packageManager.getLaunchIntentForPackage(app.packageName)?.let { startActivity(it) }
     }
 
-    // --- Drawer overlay ---
-
     private fun openDrawer() {
         if (drawerOpen) return
         drawerOpen = true
@@ -166,9 +163,6 @@ class HomeActivity : BaseActivity() {
             }
             .start()
     }
-
-    // --- Gestures: pinch-out (profile toggle), swipe/double-tap/pinch-in (mappable),
-    //     and double-tap-and-hold (touch-block trigger, handled independently below) ---
 
     private fun setupGestures() {
         scaleDetector = ScaleGestureDetector(this, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
@@ -199,6 +193,10 @@ class HomeActivity : BaseActivity() {
                 return true
             }
 
+            override fun onLongPress(e: MotionEvent) {
+                showHomeLongPressPopup()
+            }
+
             override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
                 if (e1 == null) return false
                 val dx = e2.x - e1.x
@@ -222,15 +220,25 @@ class HomeActivity : BaseActivity() {
             }
         })
 
+        val itemTouchListener = object : RecyclerView.SimpleOnItemTouchListener() {
+            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                handleTouchBlockGesture(e)
+                scaleDetector.onTouchEvent(e)
+                gestureDetector.onTouchEvent(e)
+                return false
+            }
+        }
+        binding.homeGridRecyclerView.addOnItemTouchListener(itemTouchListener)
+        binding.homeDockRecyclerView.addOnItemTouchListener(itemTouchListener)
+
         binding.root.setOnTouchListener { _, event ->
             handleTouchBlockGesture(event)
             scaleDetector.onTouchEvent(event)
             gestureDetector.onTouchEvent(event)
-            true
+            false
         }
     }
 
-    /** Double-tap-and-hold: a second tap-down that stays down past the hold threshold toggles touch-block. */
     private fun handleTouchBlockGesture(event: MotionEvent) {
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
@@ -270,15 +278,6 @@ class HomeActivity : BaseActivity() {
         val action = gesturePreference.getAction(type)
         val shouldOpenDrawer = gestureExecutor.execute(action, gesturePreference.getLaunchPackage(type))
         if (shouldOpenDrawer) openDrawer()
-    }
-
-    // --- Long-press: Wallpapers only (Guest) / Wallpapers + Home settings (Owner) ---
-
-    private fun setupLongPress() {
-        binding.root.setOnLongClickListener {
-            showHomeLongPressPopup()
-            true
-        }
     }
 
     private fun showHomeLongPressPopup() {
