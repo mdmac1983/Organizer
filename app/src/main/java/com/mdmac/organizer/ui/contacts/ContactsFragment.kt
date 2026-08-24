@@ -10,6 +10,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.mdmac.organizer.data.OrganizerDatabase
 import com.mdmac.organizer.data.contacts.ContactRepository
 import com.mdmac.organizer.databinding.FragmentContactsBinding
@@ -43,7 +44,12 @@ class ContactsFragment : Fragment() {
                     .show(childFragmentManager, "edit_contact")
             },
             onLongClick = { contact ->
-                viewModel.delete(contact)
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Delete contact?")
+                    .setMessage("This can't be undone.")
+                    .setPositiveButton("Delete") { _, _ -> viewModel.delete(contact) }
+                    .setNegativeButton("Cancel", null)
+                    .show()
                 true
             }
         )
