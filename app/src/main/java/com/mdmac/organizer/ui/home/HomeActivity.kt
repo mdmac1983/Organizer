@@ -13,6 +13,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.Toast
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -68,6 +71,15 @@ class HomeActivity : BaseActivity() {
             binding = ActivityHomeBinding.inflate(layoutInflater)
             setContentView(binding.root)
 
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+            window.statusBarColor = android.graphics.Color.TRANSPARENT
+            window.navigationBarColor = android.graphics.Color.TRANSPARENT
+            ViewCompat.setOnApplyWindowInsetsListener(binding.contentContainer) { view, insets ->
+                val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                view.setPadding(view.paddingLeft, bars.top, view.paddingRight, bars.bottom)
+                insets
+            }
+
             profileManager = ProfileManager(this)
             homeRepository = HomeRepository(this)
             appsRepository = AppsRepository(this)
@@ -115,12 +127,6 @@ class HomeActivity : BaseActivity() {
         }
     }
 
-    /**
-     * Activity-level touch observation — sees every touch before it's dispatched
-     * to any child view, including deep inside the open drawer's AppsFragment.
-     * Never consumes anything (always returns super's result), so normal
-     * scrolling/clicks/text-input everywhere else are completely unaffected.
-     */
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         if (::scaleDetector.isInitialized) {
             handleTouchBlockGesture(ev)
@@ -134,13 +140,15 @@ class HomeActivity : BaseActivity() {
         gridAdapter = AppGridAdapter(
             onAppClick = ::launchApp,
             onAppLongClick = { _, _ -> false },
-            onHiddenFolderClick = {}
+            onHiddenFolderClick = {},
+            useHomeLabelStyle = true
         )
         dockAdapter = AppGridAdapter(
             onAppClick = ::launchApp,
             onAppLongClick = { _, _ -> false },
             onHiddenFolderClick = {},
-            fixedItemWidthDp = 88
+            fixedItemWidthDp = 88,
+            useHomeLabelStyle = true
         )
         binding.homeGridRecyclerView.adapter = gridAdapter
         binding.homeDockRecyclerView.layoutManager =
@@ -246,7 +254,6 @@ class HomeActivity : BaseActivity() {
                 if (abs(dx) < SWIPE_MIN_DISTANCE && abs(dy) < SWIPE_MIN_DISTANCE) return false
 
                 if (drawerOpen) {
-                    // While the drawer is open, only swipe-down-to-close is meaningful.
                     if (dy > 0 && abs(dy) > abs(dx)) closeDrawer()
                     return true
                 }
