@@ -14,25 +14,23 @@ import com.mdmac.organizer.databinding.ItemAppIconBinding
 sealed class AppGridItem {
     data class AppEntry(val app: InstalledApp) : AppGridItem()
     data class HiddenFolder(val count: Int) : AppGridItem()
+    object PlannerShortcut : AppGridItem()
 }
 
 private const val HIDDEN_FOLDER_STABLE_ID = "__hidden_folder__"
+private const val PLANNER_SHORTCUT_STABLE_ID = "__planner_shortcut__"
 
 private fun AppGridItem.stableId(): String = when (this) {
     is AppGridItem.AppEntry -> this.app.packageName
     is AppGridItem.HiddenFolder -> HIDDEN_FOLDER_STABLE_ID
+    is AppGridItem.PlannerShortcut -> PLANNER_SHORTCUT_STABLE_ID
 }
 
-/**
- * fixedItemWidthDp: for horizontal LinearLayoutManager (docks) — see earlier note.
- * useHomeLabelStyle: forces white text + a drop shadow, independent of theme —
- * for Home screen instances, where labels sit over an arbitrary wallpaper rather
- * than a solid surface, so theme-driven text color can't guarantee contrast.
- */
 class AppGridAdapter(
     private val onAppClick: (InstalledApp) -> Unit,
     private val onAppLongClick: (InstalledApp, View) -> Boolean,
     private val onHiddenFolderClick: () -> Unit,
+    private val onPlannerClick: () -> Unit = {},
     private val fixedItemWidthDp: Int? = null,
     private val useHomeLabelStyle: Boolean = false
 ) : ListAdapter<AppGridItem, AppGridAdapter.VH>(DIFF) {
@@ -67,6 +65,12 @@ class AppGridAdapter(
                     R.string.hidden_folder_label, item.count
                 )
                 holder.itemView.setOnClickListener { onHiddenFolderClick() }
+                holder.itemView.setOnLongClickListener { false }
+            }
+            is AppGridItem.PlannerShortcut -> {
+                holder.binding.appIcon.setImageResource(R.drawable.ic_row_calendar)
+                holder.binding.appLabel.text = "Planner"
+                holder.itemView.setOnClickListener { onPlannerClick() }
                 holder.itemView.setOnLongClickListener { false }
             }
         }
