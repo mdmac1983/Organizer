@@ -68,12 +68,4 @@ android:fadeScrollbars="false"/>
 
     </FrameLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/dockRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorSurfaceVariant"
-        android:paddingVertical="4dp"
-        android:visibility="gone" />
-
 </LinearLayout>
