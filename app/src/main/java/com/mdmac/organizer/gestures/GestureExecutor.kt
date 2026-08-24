@@ -2,7 +2,9 @@ package com.mdmac.organizer.gestures
 
 import android.accessibilityservice.AccessibilityService
 import android.content.Context
+import android.content.Intent
 import android.os.Build
+import android.provider.Settings
 import android.widget.Toast
 import com.mdmac.organizer.accessibility.TouchBlockerService
 
@@ -29,6 +31,11 @@ class GestureExecutor(private val context: Context) {
                         context.startActivity(intent)
                     }
                 }
+            }
+            GestureAction.SWITCH_LAUNCHER -> {
+                context.startActivity(
+                    Intent(Settings.ACTION_HOME_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                )
             }
         }
         return false
