@@ -44,7 +44,15 @@ class NotesFragment : Fragment() {
 
         adapter = NoteAdapter(
             onClick = { note -> openEditor(noteId = note.id, folderId = null) },
-            onLongClick = { note -> viewModel.deleteNote(note); true }
+            onLongClick = { note ->
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Delete note?")
+                    .setMessage("This can't be undone.")
+                    .setPositiveButton("Delete") { _, _ -> viewModel.deleteNote(note) }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+                true
+            }
         )
         binding.notesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.notesRecyclerView.adapter = adapter
