@@ -6,14 +6,18 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.GestureDetector
+import android.view.Gravity
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
+import android.view.ViewGroup
+import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.mdmac.organizer.R
 import com.mdmac.organizer.accessibility.TouchBlockerService
 import com.mdmac.organizer.data.apps.AppsRepository
 import com.mdmac.organizer.data.apps.InstalledApp
@@ -61,26 +65,47 @@ class HomeActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityHomeBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        try {
+            binding = ActivityHomeBinding.inflate(layoutInflater)
+            setContentView(binding.root)
 
-        profileManager = ProfileManager(this)
-        homeRepository = HomeRepository(this)
-        appsRepository = AppsRepository(this)
-        wallpaperRepository = WallpaperRepository(this)
-        gesturePreference = GesturePreference(this)
-        gestureExecutor = GestureExecutor(this)
+            profileManager = ProfileManager(this)
+            homeRepository = HomeRepository(this)
+            appsRepository = AppsRepository(this)
+            wallpaperRepository = WallpaperRepository(this)
+            gesturePreference = GesturePreference(this)
+            gestureExecutor = GestureExecutor(this)
 
-        setupGrids()
-        setupGestures()
-        loadWallpaper()
-        loadHome()
+            setupGrids()
+            setupGestures()
+            loadWallpaper()
+            loadHome()
+        } catch (t: Throwable) {
+            showCrashScreen(t)
+        }
+    }
+
+    private fun showCrashScreen(t: Throwable) {
+        val scrollView = android.widget.ScrollView(this)
+        val textView = android.widget.TextView(this).apply {
+            setPadding(32, 32, 32, 32)
+            textSize = 12f
+            setTextColor(android.graphics.Color.BLACK)
+            text = "HomeActivity crashed:\n\n" + android.util.Log.getStackTraceString(t)
+        }
+        scrollView.addView(textView)
+        scrollView.setBackgroundColor(android.graphics.Color.WHITE)
+        setContentView(scrollView)
     }
 
     override fun onResume() {
         super.onResume()
-        loadWallpaper()
-        loadHome()
+        try {
+            loadWallpaper()
+            loadHome()
+        } catch (t: Throwable) {
+            showCrashScreen(t)
+        }
     }
 
     override fun onBackPressed() {
@@ -194,7 +219,7 @@ class HomeActivity : BaseActivity() {
             }
 
             override fun onLongPress(e: MotionEvent) {
-                showHomeLongPressPopup()
+                showHomeLongPressPopup(e.rawX.toInt(), e.rawY.toInt())
             }
 
             override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
@@ -280,26 +305,34 @@ class HomeActivity : BaseActivity() {
         if (shouldOpenDrawer) openDrawer()
     }
 
-    private fun showHomeLongPressPopup() {
-        val popup = androidx.appcompat.widget.PopupMenu(this, binding.root)
-        popup.menu.add(0, MENU_WALLPAPERS, 0, "Wallpapers")
-        if (profileManager.getCurrentProfile() == Profile.OWNER) {
-            popup.menu.add(0, MENU_HOME_SETTINGS, 1, "Home settings")
+    private fun showHomeLongPressPopup(touchX: Int, touchY: Int) {
+        val popupView = layoutInflater.inflate(R.layout.popup_home_long_press, null)
+        val popupWindow = PopupWindow(
+            popupView,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            true
+        )
+
+        val isOwner = profileManager.getCurrentProfile() == Profile.OWNER
+        popupView.findViewById<View>(R.id.rowHomeSettings).visibility =
+            if (isOwner) View.VISIBLE else View.GONE
+
+        popupView.findViewById<View>(R.id.rowWallpapers).setOnClickListener {
+            popupWindow.dismiss()
+            startActivity(Intent(this, WallpaperPickerActivity::class.java))
         }
-        popup.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                MENU_WALLPAPERS -> {
-                    startActivity(Intent(this, WallpaperPickerActivity::class.java))
-                    true
-                }
-                MENU_HOME_SETTINGS -> {
-                    startActivity(Intent(this, SettingsActivity::class.java))
-                    true
-                }
-                else -> false
-            }
+        popupView.findViewById<View>(R.id.rowHomeSettings).setOnClickListener {
+            popupWindow.dismiss()
+            startActivity(Intent(this, SettingsActivity::class.java))
         }
-        popup.show()
+
+        popupView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        val popupWidth = popupView.measuredWidth
+        val screenWidth = resources.displayMetrics.widthPixels
+        val x = touchX.coerceIn(0, (screenWidth - popupWidth).coerceAtLeast(0))
+
+        popupWindow.showAtLocation(binding.root, Gravity.NO_GRAVITY, x, touchY)
     }
 
     companion object {
@@ -309,7 +342,5 @@ class HomeActivity : BaseActivity() {
         private const val DOUBLE_TAP_TIMEOUT_MS = 300L
         private const val TAP_SLOP_PX = 60f
         private const val HOLD_THRESHOLD_MS = 500L
-        private const val MENU_WALLPAPERS = 1
-        private const val MENU_HOME_SETTINGS = 2
     }
 }
