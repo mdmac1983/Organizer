@@ -41,12 +41,4 @@
 
     </ScrollView>
 
-    <TextView
-        android:id="@+id/footerText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="12dp"
-        android:textAppearance="@style/TextAppearance.Organizer.Caption" />
-
 </LinearLayout>
