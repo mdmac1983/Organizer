@@ -24,6 +24,8 @@ import com.mdmac.organizer.data.apps.AppsRepository
 import com.mdmac.organizer.data.apps.InstalledApp
 import com.mdmac.organizer.databinding.FragmentAppsBinding
 import com.mdmac.organizer.ui.settings.DrawerSettingsPreference
+import com.mdmac.organizer.data.home.HomeRepository
+import com.mdmac.organizer.profile.ProfileManager
 import kotlinx.coroutines.launch
 
 class AppsFragment : Fragment() {
