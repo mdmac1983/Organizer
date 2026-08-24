@@ -13,110 +13,131 @@
         app:navigationIcon="?attr/homeAsUpIndicator"
         app:title="App drawer" />
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Columns"
-            android:textAppearance="@style/TextAppearance.Organizer.Body" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-            <SeekBar
-                android:id="@+id/columnsSeekBar"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
+            android:orientation="vertical"
+            android:padding="16dp">
+
             <TextView
-                android:id="@+id/columnsValue"
-                android:layout_width="32dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="end"
+                android:text="Columns"
                 android:textAppearance="@style/TextAppearance.Organizer.Body" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <SeekBar
+                    android:id="@+id/columnsSeekBar"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+                <TextView
+                    android:id="@+id/columnsValue"
+                    android:layout_width="32dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:textAppearance="@style/TextAppearance.Organizer.Body" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Icon opacity"
+                android:textAppearance="@style/TextAppearance.Organizer.Body" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <SeekBar
+                    android:id="@+id/opacitySeekBar"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:max="100" />
+                <TextView
+                    android:id="@+id/opacityValue"
+                    android:layout_width="48dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:textAppearance="@style/TextAppearance.Organizer.Body" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Brightness"
+                android:textAppearance="@style/TextAppearance.Organizer.Body" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <SeekBar
+                    android:id="@+id/brightnessSeekBar"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:max="100" />
+                <TextView
+                    android:id="@+id/brightnessValue"
+                    android:layout_width="48dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:textAppearance="@style/TextAppearance.Organizer.Body" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Background transparency"
+                android:textAppearance="@style/TextAppearance.Organizer.Body" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <SeekBar
+                    android:id="@+id/backgroundTransparencySeekBar"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:max="100" />
+                <TextView
+                    android:id="@+id/backgroundTransparencyValue"
+                    android:layout_width="48dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:textAppearance="@style/TextAppearance.Organizer.Body" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Dock apps"
+                android:textAppearance="@style/TextAppearance.Organizer.Title" />
+
+            <LinearLayout
+                android:id="@+id/dockAppsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp" />
+
         </LinearLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Icon opacity"
-            android:textAppearance="@style/TextAppearance.Organizer.Body" />
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-            <SeekBar
-                android:id="@+id/opacitySeekBar"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:max="100" />
-            <TextView
-                android:id="@+id/opacityValue"
-                android:layout_width="48dp"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:textAppearance="@style/TextAppearance.Organizer.Body" />
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Brightness"
-            android:textAppearance="@style/TextAppearance.Organizer.Body" />
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-            <SeekBar
-                android:id="@+id/brightnessSeekBar"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:max="100" />
-            <TextView
-                android:id="@+id/brightnessValue"
-                android:layout_width="48dp"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:textAppearance="@style/TextAppearance.Organizer.Body" />
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Background transparency"
-            android:textAppearance="@style/TextAppearance.Organizer.Body" />
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
-            <SeekBar
-                android:id="@+id/backgroundTransparencySeekBar"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:max="100" />
-            <TextView
-                android:id="@+id/backgroundTransparencyValue"
-                android:layout_width="48dp"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:textAppearance="@style/TextAppearance.Organizer.Body" />
-        </LinearLayout>
-
-    </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>
