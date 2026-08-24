@@ -5,18 +5,11 @@ import com.mdmac.organizer.data.apps.AppsRepository
 import com.mdmac.organizer.data.apps.InstalledApp
 import com.mdmac.organizer.profile.Profile
 
-/**
- * Grid size, dock size, and curated app placement for each profile's Home
- * screen. Guest's values are fixed (5x5 grid, 5-slot dock) and not user
- * adjustable; Owner's are stored and adjustable via sliders.
- */
 class HomeRepository(context: Context) {
 
     private val appContext = context.applicationContext
     private val prefs = appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     private val appsRepository = AppsRepository(appContext)
-
-    // --- Grid size (Owner only — Guest is fixed) ---
 
     fun getColumns(profile: Profile): Int =
         if (profile == Profile.GUEST) GUEST_COLUMNS else prefs.getInt(KEY_OWNER_COLUMNS, DEFAULT_OWNER_COLUMNS)
@@ -27,7 +20,6 @@ class HomeRepository(context: Context) {
     fun getDockSlots(profile: Profile): Int =
         if (profile == Profile.GUEST) GUEST_DOCK_SLOTS else prefs.getInt(KEY_OWNER_DOCK_SLOTS, DEFAULT_OWNER_DOCK_SLOTS)
 
-    /** Returns false (and doesn't save) if the requested size is smaller than what's currently occupied. */
     fun setOwnerColumns(value: Int): Boolean {
         val clamped = value.coerceIn(OWNER_COLUMNS_MIN, OWNER_COLUMNS_MAX)
         val occupiedColumns = minColumnsToFit(getHomePackages(Profile.OWNER).size, getRows(Profile.OWNER))
@@ -58,7 +50,7 @@ class HomeRepository(context: Context) {
     private fun minRowsToFit(appCount: Int, columns: Int): Int =
         if (columns <= 0) OWNER_ROWS_MIN else ((appCount + columns - 1) / columns).coerceAtLeast(OWNER_ROWS_MIN)
 
-    // --- Curated home-grid apps (both profiles use this; Guest's set is Owner-curated) ---
+    // --- Curated home-grid apps ---
 
     fun getHomePackages(profile: Profile): List<String> {
         val key = if (profile == Profile.GUEST) KEY_GUEST_APPS else KEY_OWNER_APPS
@@ -77,6 +69,15 @@ class HomeRepository(context: Context) {
         return all.filter { it.packageName in wanted }
     }
 
+    // --- Guest's drawer visibility: a distinct list from Guest's home apps ---
+
+    fun getGuestDrawerPackages(): Set<String> =
+        prefs.getStringSet(KEY_GUEST_DRAWER_APPS, emptySet()) ?: emptySet()
+
+    fun setGuestDrawerPackages(packages: Set<String>) {
+        prefs.edit().putStringSet(KEY_GUEST_DRAWER_APPS, packages).apply()
+    }
+
     companion object {
         private const val PREFS_NAME = "home_prefs"
         private const val KEY_OWNER_COLUMNS = "owner_columns"
@@ -84,6 +85,7 @@ class HomeRepository(context: Context) {
         private const val KEY_OWNER_DOCK_SLOTS = "owner_dock_slots"
         private const val KEY_GUEST_APPS = "guest_home_apps"
         private const val KEY_OWNER_APPS = "owner_home_apps"
+        private const val KEY_GUEST_DRAWER_APPS = "guest_drawer_apps"
 
         const val GUEST_COLUMNS = 5
         const val GUEST_ROWS = 5
