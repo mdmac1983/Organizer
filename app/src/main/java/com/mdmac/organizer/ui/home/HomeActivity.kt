@@ -2,6 +2,8 @@ package com.mdmac.organizer.ui.home
 
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -11,6 +13,7 @@ import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.core.view.ViewCompat
@@ -18,7 +21,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
+import com.mdmac.organizer.MainActivity
 import com.mdmac.organizer.R
 import com.mdmac.organizer.accessibility.TouchBlockerService
 import com.mdmac.organizer.data.apps.AppsRepository
@@ -26,6 +29,7 @@ import com.mdmac.organizer.data.apps.InstalledApp
 import com.mdmac.organizer.data.home.HomeRepository
 import com.mdmac.organizer.data.wallpaper.WallpaperRepository
 import com.mdmac.organizer.databinding.ActivityHomeBinding
+import com.mdmac.organizer.databinding.ItemAppIconBinding
 import com.mdmac.organizer.gestures.GestureAction
 import com.mdmac.organizer.gestures.GestureExecutor
 import com.mdmac.organizer.gestures.GesturePreference
@@ -56,7 +60,6 @@ class HomeActivity : BaseActivity() {
     private val touchBlockHandler = Handler(Looper.getMainLooper())
 
     private lateinit var gridAdapter: AppGridAdapter
-    private lateinit var dockAdapter: AppGridAdapter
 
     private var drawerOpen = false
 
@@ -72,8 +75,11 @@ class HomeActivity : BaseActivity() {
             setContentView(binding.root)
 
             WindowCompat.setDecorFitsSystemWindows(window, false)
-            window.statusBarColor = android.graphics.Color.TRANSPARENT
-            window.navigationBarColor = android.graphics.Color.TRANSPARENT
+            window.statusBarColor = Color.TRANSPARENT
+            window.navigationBarColor = Color.TRANSPARENT
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                window.isNavigationBarContrastEnforced = false
+            }
             ViewCompat.setOnApplyWindowInsetsListener(binding.contentContainer) { view, insets ->
                 val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
                 view.setPadding(view.paddingLeft, bars.top, view.paddingRight, bars.bottom)
@@ -87,7 +93,7 @@ class HomeActivity : BaseActivity() {
             gesturePreference = GesturePreference(this)
             gestureExecutor = GestureExecutor(this)
 
-            setupGrids()
+            setupGrid()
             setupGestureDetectors()
             loadWallpaper()
             loadHome()
@@ -101,11 +107,11 @@ class HomeActivity : BaseActivity() {
         val textView = android.widget.TextView(this).apply {
             setPadding(32, 32, 32, 32)
             textSize = 12f
-            setTextColor(android.graphics.Color.BLACK)
+            setTextColor(Color.BLACK)
             text = "HomeActivity crashed:\n\n" + android.util.Log.getStackTraceString(t)
         }
         scrollView.addView(textView)
-        scrollView.setBackgroundColor(android.graphics.Color.WHITE)
+        scrollView.setBackgroundColor(Color.WHITE)
         setContentView(scrollView)
     }
 
@@ -136,24 +142,15 @@ class HomeActivity : BaseActivity() {
         return super.dispatchTouchEvent(ev)
     }
 
-    private fun setupGrids() {
+    private fun setupGrid() {
         gridAdapter = AppGridAdapter(
             onAppClick = ::launchApp,
             onAppLongClick = { _, _ -> false },
             onHiddenFolderClick = {},
-            useHomeLabelStyle = true
-        )
-        dockAdapter = AppGridAdapter(
-            onAppClick = ::launchApp,
-            onAppLongClick = { _, _ -> false },
-            onHiddenFolderClick = {},
-            fixedItemWidthDp = 88,
+            onPlannerClick = { startActivity(Intent(this, MainActivity::class.java)) },
             useHomeLabelStyle = true
         )
         binding.homeGridRecyclerView.adapter = gridAdapter
-        binding.homeDockRecyclerView.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        binding.homeDockRecyclerView.adapter = dockAdapter
     }
 
     private fun loadWallpaper() {
@@ -177,14 +174,45 @@ class HomeActivity : BaseActivity() {
 
         lifecycleScope.launch {
             val homeApps = homeRepository.getHomeApps(profile)
-            gridAdapter.submitList(homeApps.map { AppGridItem.AppEntry(it) })
+            val items = mutableListOf<AppGridItem>()
+            if (profile == Profile.OWNER) {
+                items.add(AppGridItem.PlannerShortcut)
+            }
+            items.addAll(homeApps.map { AppGridItem.AppEntry(it) })
+            gridAdapter.submitList(items)
 
             val dockPackages = appsRepository.getPinnedPackages()
             val allApps = appsRepository.getLaunchableApps()
             val dockApps = allApps.filter { it.packageName in dockPackages }
                 .take(homeRepository.getDockSlots(profile))
-            binding.homeDockRecyclerView.visibility = if (dockApps.isEmpty()) View.GONE else View.VISIBLE
-            dockAdapter.submitList(dockApps.map { AppGridItem.AppEntry(it) })
+            populateDock(profile, dockApps)
+        }
+    }
+
+    /** Renders a fixed number of evenly-weighted slots (matching the profile's dock size),
+        so items stay spread across the full width regardless of how many are actually filled. */
+    private fun populateDock(profile: Profile, dockApps: List<InstalledApp>) {
+        binding.homeDockContainer.removeAllViews()
+        binding.homeDockContainer.visibility = if (dockApps.isEmpty()) View.GONE else View.VISIBLE
+        if (dockApps.isEmpty()) return
+
+        val totalSlots = homeRepository.getDockSlots(profile)
+        for (i in 0 until totalSlots) {
+            val app = dockApps.getOrNull(i)
+            val itemBinding = ItemAppIconBinding.inflate(layoutInflater, binding.homeDockContainer, false)
+            itemBinding.root.layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+
+            if (app != null) {
+                itemBinding.appIcon.setImageDrawable(app.icon)
+                itemBinding.appLabel.text = app.label
+                itemBinding.appLabel.setTextColor(Color.WHITE)
+                itemBinding.appLabel.setShadowLayer(4f, 0f, 1f, Color.argb(180, 0, 0, 0))
+                itemBinding.root.setOnClickListener { launchApp(app) }
+                itemBinding.root.visibility = View.VISIBLE
+            } else {
+                itemBinding.root.visibility = View.INVISIBLE
+            }
+            binding.homeDockContainer.addView(itemBinding.root)
         }
     }
 
@@ -354,5 +382,7 @@ class HomeActivity : BaseActivity() {
         private const val DOUBLE_TAP_TIMEOUT_MS = 300L
         private const val TAP_SLOP_PX = 60f
         private const val HOLD_THRESHOLD_MS = 500L
+        private const val MENU_WALLPAPERS = 1
+        private const val MENU_HOME_SETTINGS = 2
     }
 }
