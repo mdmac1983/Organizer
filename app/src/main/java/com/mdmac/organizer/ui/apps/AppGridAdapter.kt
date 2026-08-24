@@ -22,16 +22,27 @@ private fun AppGridItem.stableId(): String = when (this) {
     is AppGridItem.HiddenFolder -> HIDDEN_FOLDER_STABLE_ID
 }
 
+/**
+ * fixedItemWidthDp: pass a value when hosting this adapter in a horizontal
+ * LinearLayoutManager (docks) — without it, the item's match_parent width
+ * (needed for the grid, where GridLayoutManager constrains it per-column)
+ * stretches to fill the entire RecyclerView, showing only one item at a time.
+ */
 class AppGridAdapter(
     private val onAppClick: (InstalledApp) -> Unit,
     private val onAppLongClick: (InstalledApp, View) -> Boolean,
-    private val onHiddenFolderClick: () -> Unit
+    private val onHiddenFolderClick: () -> Unit,
+    private val fixedItemWidthDp: Int? = null
 ) : ListAdapter<AppGridItem, AppGridAdapter.VH>(DIFF) {
 
     inner class VH(val binding: ItemAppIconBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
         val binding = ItemAppIconBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        fixedItemWidthDp?.let { widthDp ->
+            val widthPx = (widthDp * parent.context.resources.displayMetrics.density).toInt()
+            binding.root.layoutParams = binding.root.layoutParams.apply { width = widthPx }
+        }
         return VH(binding)
     }
 
