@@ -11,6 +11,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -22,10 +23,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.mdmac.organizer.R
 import com.mdmac.organizer.data.apps.AppsRepository
 import com.mdmac.organizer.data.apps.InstalledApp
-import com.mdmac.organizer.databinding.FragmentAppsBinding
-import com.mdmac.organizer.ui.settings.DrawerSettingsPreference
 import com.mdmac.organizer.data.home.HomeRepository
+import com.mdmac.organizer.databinding.FragmentAppsBinding
 import com.mdmac.organizer.profile.ProfileManager
+import com.mdmac.organizer.ui.settings.DrawerSettingsPreference
 import kotlinx.coroutines.launch
 
 class AppsFragment : Fragment() {
@@ -40,6 +41,8 @@ class AppsFragment : Fragment() {
     private lateinit var gridAdapter: AppGridAdapter
     private lateinit var dockAdapter: AppGridAdapter
     private lateinit var drawerSettings: DrawerSettingsPreference
+    private lateinit var homeRepository: HomeRepository
+    private lateinit var profileManager: ProfileManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -52,6 +55,8 @@ class AppsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         drawerSettings = DrawerSettingsPreference(requireContext())
+        homeRepository = HomeRepository(requireContext())
+        profileManager = ProfileManager(requireContext())
 
         gridAdapter = AppGridAdapter(
             onAppClick = ::launchApp,
@@ -100,9 +105,8 @@ class AppsFragment : Fragment() {
 
     /**
      * Icon opacity dims the grid+dock content; brightness lightens/darkens icons
-     * (currently a stored value only, no visible effect yet — flagged in Batch C
-     * as needing a per-icon color filter pass); background transparency blends
-     * the theme's surface color down toward fully see-through, so the Home
+     * (currently a stored value only, no visible effect yet); background transparency
+     * blends the theme's surface color down toward fully see-through, so the Home
      * wallpaper shows through behind the drawer as it's dragged down.
      */
     private fun applyOpacityAndBrightness() {
@@ -149,6 +153,14 @@ class AppsFragment : Fragment() {
             if (app.isPinned) "Remove from Dock" else "Pin to Dock"
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
+                R.id.action_add_to_home -> {
+                    val profile = profileManager.getCurrentProfile()
+                    val current = homeRepository.getHomePackages(profile).toMutableSet()
+                    current.add(app.packageName)
+                    homeRepository.setHomePackages(profile, current)
+                    Toast.makeText(requireContext(), "Added to Home", Toast.LENGTH_SHORT).show()
+                    true
+                }
                 R.id.action_pin_toggle -> {
                     viewModel.togglePin(app)
                     true
