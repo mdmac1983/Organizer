@@ -7,7 +7,8 @@ enum class GestureAction(val label: String) {
     QUICK_SETTINGS("Expand quick settings"),
     RECENT_APPS("Recent apps"),
     SCREEN_LOCK("Lock screen"),
-    LAUNCH_APP("Launch app")
+    LAUNCH_APP("Launch app"),
+    SWITCH_LAUNCHER("Switch default launcher")
 }
 
 enum class GestureType(val label: String) {
