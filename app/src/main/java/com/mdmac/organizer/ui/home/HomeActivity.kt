@@ -139,7 +139,8 @@ class HomeActivity : BaseActivity() {
         dockAdapter = AppGridAdapter(
             onAppClick = ::launchApp,
             onAppLongClick = { _, _ -> false },
-            onHiddenFolderClick = {}
+            onHiddenFolderClick = {},
+            fixedItemWidthDp = 88
         )
         binding.homeGridRecyclerView.adapter = gridAdapter
         binding.homeDockRecyclerView.layoutManager =
