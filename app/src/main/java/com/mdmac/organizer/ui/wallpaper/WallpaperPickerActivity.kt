@@ -28,9 +28,15 @@ class WallpaperPickerActivity : BaseActivity() {
     }
 
     private val bundledOptions = listOf(
-        R.drawable.wallpaper_placeholder_1,
-        R.drawable.wallpaper_placeholder_2,
-        R.drawable.wallpaper_placeholder_3
+        R.drawable.wallpaper_bubblegum,
+        R.drawable.wallpaper_flora,
+        R.drawable.wallpaper_canyon,
+        R.drawable.wallpaper_escape,
+        R.drawable.wallpaper_kepler,
+        R.drawable.wallpaper_outofthebox,
+        R.drawable.wallpaper_work,
+        R.drawable.wallpaper_chroma,
+        R.drawable.wallpaper_architecture
     )
 
     private val pickImageLauncher = registerForActivityResult(
