@@ -14,6 +14,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.mdmac.organizer.data.OrganizerDatabase
 import com.mdmac.organizer.data.passwords.PasswordCrypto
 import com.mdmac.organizer.data.passwords.PasswordRepository
@@ -58,7 +59,12 @@ class PasswordsFragment : Fragment() {
                     .show(childFragmentManager, "edit_password")
             },
             onLongClick = { entry ->
-                viewModel.delete(entry)
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Delete password entry?")
+                    .setMessage("This can't be undone.")
+                    .setPositiveButton("Delete") { _, _ -> viewModel.delete(entry) }
+                    .setNegativeButton("Cancel", null)
+                    .show()
                 true
             },
             onCopy = { plainPassword ->
