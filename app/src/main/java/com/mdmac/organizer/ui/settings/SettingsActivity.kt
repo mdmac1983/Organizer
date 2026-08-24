@@ -27,6 +27,7 @@ private data class SettingsRow(
     val title: String,
     val subtitleProvider: () -> String,
     val iconColorRes: Int,
+    val iconRes: Int,
     val onClick: () -> Unit
 )
 
@@ -59,64 +60,74 @@ class SettingsActivity : BaseActivity() {
             SettingsRow(
                 "About",
                 { "OrionMD — Simple Planner" },
-                R.color.row_icon_general
+                R.color.row_icon_general,
+                R.drawable.ic_row_info
             ) { startActivity(Intent(this, AboutActivity::class.java)) },
             SettingsRow(
                 getString(R.string.settings_row_default_launcher_title),
                 { defaultLauncherSubtitle() },
-                R.color.row_icon_launcher
+                R.color.row_icon_launcher,
+                R.drawable.ic_row_launcher
             ) { openHomeAppPicker() },
             SettingsRow(
                 getString(R.string.settings_row_home_screen_title),
                 { getString(R.string.settings_row_home_screen_subtitle) },
-                R.color.row_icon_home
+                R.color.row_icon_home,
+                R.drawable.ic_row_home_screen
             ) { startActivity(Intent(this, HomeScreenSettingsActivity::class.java)) },
             SettingsRow(
                 getString(R.string.settings_row_app_drawer_title),
                 { getString(R.string.settings_row_app_drawer_subtitle) },
-                R.color.row_icon_drawer
+                R.color.row_icon_drawer,
+                R.drawable.ic_row_apps
             ) { startActivity(Intent(this, AppDrawerSettingsActivity::class.java)) },
             SettingsRow(
                 getString(R.string.settings_row_gestures_title),
                 { getString(R.string.settings_row_gestures_subtitle) },
-                R.color.row_icon_gestures
+                R.color.row_icon_gestures,
+                R.drawable.ic_row_gesture
             ) { startActivity(Intent(this, GesturesSettingsActivity::class.java)) },
             SettingsRow(
                 getString(R.string.settings_row_wallpaper_title),
                 { getString(R.string.settings_row_wallpaper_subtitle) },
-                R.color.row_icon_wallpaper
+                R.color.row_icon_wallpaper,
+                R.drawable.ic_row_wallpaper
             ) { startActivity(Intent(this, WallpaperPickerActivity::class.java)) },
             SettingsRow(
                 getString(R.string.settings_row_theme_title),
                 { themeSubtitle() },
-                R.color.row_icon_theme
+                R.color.row_icon_theme,
+                R.drawable.ic_row_theme
             ) { showThemeDialog() },
             SettingsRow(
                 getString(R.string.settings_row_apps_title),
                 { getString(R.string.settings_row_apps_subtitle) },
-                R.color.row_icon_apps
+                R.color.row_icon_apps,
+                R.drawable.ic_row_edit
             ) { startActivity(Intent(this, AppsSettingsActivity::class.java)) },
             SettingsRow(
                 getString(R.string.settings_row_touch_block_title),
                 { touchBlockSubtitle() },
-                R.color.row_icon_touchblock
+                R.color.row_icon_touchblock,
+                R.drawable.ic_row_block
             ) { startActivity(Intent(this, LegacySettingsActivity::class.java)) },
-            SettingsRow("Planner", { "Calendar and entries" }, R.color.row_icon_general) {
+            SettingsRow("Planner", { "Calendar and entries" }, R.color.row_icon_general, R.drawable.ic_row_calendar) {
                 openTab(0)
             },
-            SettingsRow("Contacts", { "Saved contacts" }, R.color.row_icon_general) {
+            SettingsRow("Contacts", { "Saved contacts" }, R.color.row_icon_general, R.drawable.ic_row_person) {
                 openTab(1)
             },
-            SettingsRow("Passwords", { "Encrypted password entries" }, R.color.row_icon_general) {
+            SettingsRow("Passwords", { "Encrypted password entries" }, R.color.row_icon_general, R.drawable.ic_row_lock) {
                 openTab(2)
             },
-            SettingsRow("Notes", { "Notes and folders" }, R.color.row_icon_general) {
+            SettingsRow("Notes", { "Notes and folders" }, R.color.row_icon_general, R.drawable.ic_row_note) {
                 openTab(3)
             },
             SettingsRow(
                 getString(R.string.settings_row_general_title),
                 { getString(R.string.settings_row_general_subtitle) },
-                R.color.row_icon_general
+                R.color.row_icon_general,
+                R.drawable.ic_row_info
             ) { startActivity(Intent(this, LegacySettingsActivity::class.java)) }
         )
 
@@ -126,6 +137,7 @@ class SettingsActivity : BaseActivity() {
             )
             rowBinding.rowIcon.backgroundTintList =
                 androidx.core.content.ContextCompat.getColorStateList(this, row.iconColorRes)
+            rowBinding.rowIcon.setImageResource(row.iconRes)
             rowBinding.rowTitle.text = row.title
             rowBinding.rowSubtitle.text = row.subtitleProvider()
             rowBinding.root.setOnClickListener { row.onClick() }
