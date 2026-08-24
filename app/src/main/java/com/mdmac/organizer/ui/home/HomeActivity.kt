@@ -16,7 +16,6 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.mdmac.organizer.R
 import com.mdmac.organizer.accessibility.TouchBlockerService
 import com.mdmac.organizer.data.apps.AppsRepository
@@ -77,7 +76,7 @@ class HomeActivity : BaseActivity() {
             gestureExecutor = GestureExecutor(this)
 
             setupGrids()
-            setupGestures()
+            setupGestureDetectors()
             loadWallpaper()
             loadHome()
         } catch (t: Throwable) {
@@ -114,6 +113,21 @@ class HomeActivity : BaseActivity() {
         } else {
             super.onBackPressed()
         }
+    }
+
+    /**
+     * Activity-level touch observation — sees every touch before it's dispatched
+     * to any child view, including deep inside the open drawer's AppsFragment.
+     * Never consumes anything (always returns super's result), so normal
+     * scrolling/clicks/text-input everywhere else are completely unaffected.
+     */
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        if (::scaleDetector.isInitialized) {
+            handleTouchBlockGesture(ev)
+            scaleDetector.onTouchEvent(ev)
+            gestureDetector.onTouchEvent(ev)
+        }
+        return super.dispatchTouchEvent(ev)
     }
 
     private fun setupGrids() {
@@ -189,7 +203,7 @@ class HomeActivity : BaseActivity() {
             .start()
     }
 
-    private fun setupGestures() {
+    private fun setupGestureDetectors() {
         scaleDetector = ScaleGestureDetector(this, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
             private var handled = false
 
@@ -219,7 +233,9 @@ class HomeActivity : BaseActivity() {
             }
 
             override fun onLongPress(e: MotionEvent) {
-                showHomeLongPressPopup(e.rawX.toInt(), e.rawY.toInt())
+                if (!drawerOpen) {
+                    showHomeLongPressPopup(e.rawX.toInt(), e.rawY.toInt())
+                }
             }
 
             override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
@@ -227,6 +243,12 @@ class HomeActivity : BaseActivity() {
                 val dx = e2.x - e1.x
                 val dy = e2.y - e1.y
                 if (abs(dx) < SWIPE_MIN_DISTANCE && abs(dy) < SWIPE_MIN_DISTANCE) return false
+
+                if (drawerOpen) {
+                    // While the drawer is open, only swipe-down-to-close is meaningful.
+                    if (dy > 0 && abs(dy) > abs(dx)) closeDrawer()
+                    return true
+                }
 
                 if (abs(dx) > abs(dy)) {
                     if (dx > 0) runGestureAction(GestureType.SWIPE_RIGHT) else runGestureAction(GestureType.SWIPE_LEFT)
@@ -238,30 +260,12 @@ class HomeActivity : BaseActivity() {
                             runGestureAction(GestureType.SWIPE_UP)
                         }
                     } else {
-                        if (drawerOpen) closeDrawer() else runGestureAction(GestureType.SWIPE_DOWN)
+                        runGestureAction(GestureType.SWIPE_DOWN)
                     }
                 }
                 return true
             }
         })
-
-        val itemTouchListener = object : RecyclerView.SimpleOnItemTouchListener() {
-            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
-                handleTouchBlockGesture(e)
-                scaleDetector.onTouchEvent(e)
-                gestureDetector.onTouchEvent(e)
-                return false
-            }
-        }
-        binding.homeGridRecyclerView.addOnItemTouchListener(itemTouchListener)
-        binding.homeDockRecyclerView.addOnItemTouchListener(itemTouchListener)
-
-        binding.root.setOnTouchListener { _, event ->
-            handleTouchBlockGesture(event)
-            scaleDetector.onTouchEvent(event)
-            gestureDetector.onTouchEvent(event)
-            false
-        }
     }
 
     private fun handleTouchBlockGesture(event: MotionEvent) {
