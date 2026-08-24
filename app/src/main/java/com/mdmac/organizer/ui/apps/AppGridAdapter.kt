@@ -1,5 +1,6 @@
 package com.mdmac.organizer.ui.apps
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,16 +24,17 @@ private fun AppGridItem.stableId(): String = when (this) {
 }
 
 /**
- * fixedItemWidthDp: pass a value when hosting this adapter in a horizontal
- * LinearLayoutManager (docks) — without it, the item's match_parent width
- * (needed for the grid, where GridLayoutManager constrains it per-column)
- * stretches to fill the entire RecyclerView, showing only one item at a time.
+ * fixedItemWidthDp: for horizontal LinearLayoutManager (docks) — see earlier note.
+ * useHomeLabelStyle: forces white text + a drop shadow, independent of theme —
+ * for Home screen instances, where labels sit over an arbitrary wallpaper rather
+ * than a solid surface, so theme-driven text color can't guarantee contrast.
  */
 class AppGridAdapter(
     private val onAppClick: (InstalledApp) -> Unit,
     private val onAppLongClick: (InstalledApp, View) -> Boolean,
     private val onHiddenFolderClick: () -> Unit,
-    private val fixedItemWidthDp: Int? = null
+    private val fixedItemWidthDp: Int? = null,
+    private val useHomeLabelStyle: Boolean = false
 ) : ListAdapter<AppGridItem, AppGridAdapter.VH>(DIFF) {
 
     inner class VH(val binding: ItemAppIconBinding) : RecyclerView.ViewHolder(binding.root)
@@ -42,6 +44,10 @@ class AppGridAdapter(
         fixedItemWidthDp?.let { widthDp ->
             val widthPx = (widthDp * parent.context.resources.displayMetrics.density).toInt()
             binding.root.layoutParams = binding.root.layoutParams.apply { width = widthPx }
+        }
+        if (useHomeLabelStyle) {
+            binding.appLabel.setTextColor(Color.WHITE)
+            binding.appLabel.setShadowLayer(4f, 0f, 1f, Color.argb(180, 0, 0, 0))
         }
         return VH(binding)
     }
