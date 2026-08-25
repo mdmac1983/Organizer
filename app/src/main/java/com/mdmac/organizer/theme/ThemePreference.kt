@@ -1,36 +1,48 @@
 package com.mdmac.organizer.theme
 
+import android.app.UiModeManager
 import android.content.Context
+import android.content.res.Configuration
 import androidx.annotation.StyleRes
 import com.mdmac.organizer.R
 
-enum class ThemeMode { LIGHT, DARK, LIGHT_GRAY }
+enum class ThemeMode { SYSTEM, MATERIAL_GRAY }
 
 /**
- * Stores the user's theme choice (Light / Dark / Light gray) and resolves it
- * to a concrete style resource. Applied explicitly via setTheme() in
- * BaseActivity.onCreate() — independent of the device's system dark-mode
- * setting, since "System" is no longer one of the options.
+ * "System" dynamically renders Light or Dark based on the device's own
+ * dark-mode setting — checked independently via UiModeManager, since the
+ * app's own AppCompatDelegate night-mode is intentionally forced off
+ * elsewhere (needed to keep Material Gray fully decoupled from system).
+ * "Material Gray" is a fixed, manual-only third option.
  */
-class ThemePreference(context: Context) {
+class ThemePreference(private val context: Context) {
 
     private val prefs = context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
     fun getMode(): ThemeMode {
-        val stored = prefs.getString(KEY_MODE, ThemeMode.LIGHT.name)
-        return runCatching { ThemeMode.valueOf(stored ?: ThemeMode.LIGHT.name) }
-            .getOrDefault(ThemeMode.LIGHT)
+        val stored = prefs.getString(KEY_MODE, ThemeMode.SYSTEM.name)
+        return runCatching { ThemeMode.valueOf(stored ?: ThemeMode.SYSTEM.name) }
+            .getOrDefault(ThemeMode.SYSTEM)
     }
 
     fun setMode(mode: ThemeMode) {
         prefs.edit().putString(KEY_MODE, mode.name).apply()
     }
 
+    fun isSystemInDarkMode(): Boolean {
+        val uiModeManager = context.applicationContext.getSystemService(UiModeManager::class.java)
+        return if (uiModeManager != null) {
+            uiModeManager.nightMode == UiModeManager.MODE_NIGHT_YES
+        } else {
+            val uiMode = context.resources.configuration.uiMode
+            (uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+        }
+    }
+
     @StyleRes
     fun resolveStyleRes(): Int = when (getMode()) {
-        ThemeMode.LIGHT -> R.style.Theme_Organizer_Light
-        ThemeMode.DARK -> R.style.Theme_Organizer_Dark
-        ThemeMode.LIGHT_GRAY -> R.style.Theme_Organizer_LightGray
+        ThemeMode.SYSTEM -> if (isSystemInDarkMode()) R.style.Theme_Organizer_Dark else R.style.Theme_Organizer_Light
+        ThemeMode.MATERIAL_GRAY -> R.style.Theme_Organizer_LightGray
     }
 
     companion object {
