@@ -18,8 +18,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:title="@string/app_name"
-            app:menu="@menu/main_menu" />
+            android:title="@string/app_name" />
 
         <EditText
             android:id="@+id/appSearchInput"
@@ -75,6 +74,46 @@
             android:visibility="gone" />
 
     </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/bottomActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="?attr/colorSurface"
+        android:paddingVertical="8dp">
+
+        <ImageButton
+            android:id="@+id/btnBottomSearch"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_search"
+            app:tint="?attr/colorOnSurface"
+            android:contentDescription="Search apps" />
+
+        <ImageButton
+            android:id="@+id/btnBottomHome"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_myplaces"
+            app:tint="?attr/colorOnSurface"
+            android:contentDescription="Owner Home" />
+
+        <ImageButton
+            android:id="@+id/btnBottomSettings"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_preferences"
+            app:tint="?attr/colorOnSurface"
+            android:contentDescription="Settings" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/footerText"
