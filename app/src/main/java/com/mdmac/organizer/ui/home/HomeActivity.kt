@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.TypedValue
 import android.view.GestureDetector
 import android.view.Gravity
 import android.view.MotionEvent
@@ -234,12 +235,25 @@ class HomeActivity : BaseActivity() {
         packageManager.getLaunchIntentForPackage(app.packageName)?.let { startActivity(it) }
     }
 
+    /** Resolves the currently active theme's colorSurface at runtime, since it varies by mode (Light/Dark/Material Gray). */
+    private fun resolveSurfaceColor(): Int {
+        val typedValue = TypedValue()
+        theme.resolveAttribute(com.google.android.material.R.attr.colorSurface, typedValue, true)
+        return typedValue.data
+    }
+
     private fun openDrawer() {
         if (drawerOpen) return
         drawerOpen = true
         binding.drawerContainer.visibility = View.VISIBLE
         binding.drawerContainer.translationY = binding.drawerContainer.height.toFloat().coerceAtLeast(2000f)
         binding.drawerContainer.animate().translationY(0f).setDuration(220).start()
+
+        // Match the bars to the drawer's own solid background while it's open,
+        // instead of staying transparent and showing the Home wallpaper behind them.
+        val surfaceColor = resolveSurfaceColor()
+        window.statusBarColor = surfaceColor
+        window.navigationBarColor = surfaceColor
     }
 
     private fun closeDrawer() {
@@ -250,6 +264,8 @@ class HomeActivity : BaseActivity() {
             .withEndAction {
                 binding.drawerContainer.visibility = View.GONE
                 drawerOpen = false
+                window.statusBarColor = Color.TRANSPARENT
+                window.navigationBarColor = Color.TRANSPARENT
             }
             .start()
     }
