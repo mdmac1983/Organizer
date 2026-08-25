@@ -95,6 +95,11 @@ class HomeActivity : BaseActivity() {
                 view.setPadding(view.paddingLeft, bars.top, view.paddingRight, bars.bottom)
                 insets
             }
+            ViewCompat.setOnApplyWindowInsetsListener(binding.drawerContainer) { view, insets ->
+                val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                view.setPadding(view.paddingLeft, bars.top, view.paddingRight, bars.bottom)
+                insets
+            }
 
             profileManager = ProfileManager(this)
             homeRepository = HomeRepository(this)
@@ -391,7 +396,5 @@ class HomeActivity : BaseActivity() {
         private const val DOUBLE_TAP_TIMEOUT_MS = 300L
         private const val TAP_SLOP_PX = 60f
         private const val HOLD_THRESHOLD_MS = 500L
-        private const val MENU_WALLPAPERS = 1
-        private const val MENU_HOME_SETTINGS = 2
     }
 }
