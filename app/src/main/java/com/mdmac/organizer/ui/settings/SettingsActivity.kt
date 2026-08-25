@@ -177,9 +177,8 @@ class SettingsActivity : BaseActivity() {
     }
 
     private fun themeSubtitle(): String = when (themePreference.getMode()) {
-        ThemeMode.LIGHT -> getString(R.string.theme_light)
-        ThemeMode.DARK -> getString(R.string.theme_dark)
-        ThemeMode.LIGHT_GRAY -> getString(R.string.theme_light_gray)
+        ThemeMode.SYSTEM -> "Following system (currently ${if (themePreference.isSystemInDarkMode()) "Dark" else "Light"})"
+        ThemeMode.MATERIAL_GRAY -> "Material Gray"
     }
 
     private fun touchBlockSubtitle(): String =
@@ -203,12 +202,8 @@ class SettingsActivity : BaseActivity() {
     }
 
     private fun showThemeDialog() {
-        val options = arrayOf(
-            getString(R.string.theme_light),
-            getString(R.string.theme_dark),
-            getString(R.string.theme_light_gray)
-        )
-        val modes = arrayOf(ThemeMode.LIGHT, ThemeMode.DARK, ThemeMode.LIGHT_GRAY)
+        val options = arrayOf("Follow system", "Material Gray")
+        val modes = arrayOf(ThemeMode.SYSTEM, ThemeMode.MATERIAL_GRAY)
         val currentIndex = modes.indexOf(themePreference.getMode())
 
         AlertDialog.Builder(this)
