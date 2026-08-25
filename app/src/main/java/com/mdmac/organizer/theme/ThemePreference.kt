@@ -1,8 +1,8 @@
 package com.mdmac.organizer.theme
 
-import android.app.UiModeManager
 import android.content.Context
 import android.content.res.Configuration
+import android.content.res.Resources
 import androidx.annotation.StyleRes
 import com.mdmac.organizer.R
 
@@ -10,9 +10,12 @@ enum class ThemeMode { SYSTEM, MATERIAL_GRAY }
 
 /**
  * "System" dynamically renders Light or Dark based on the device's own
- * dark-mode setting — checked independently via UiModeManager, since the
- * app's own AppCompatDelegate night-mode is intentionally forced off
- * elsewhere (needed to keep Material Gray fully decoupled from system).
+ * dark-mode setting — checked via Resources.getSystem(), the static
+ * system-wide resources instance, since it's completely independent of
+ * our app's own forced AppCompatDelegate.MODE_NIGHT_NO override (needed
+ * elsewhere to keep Material Gray fully decoupled from system). Querying
+ * through UiModeManager or this app's own Context.resources would just
+ * read that override back to itself instead of the real device setting.
  * "Material Gray" is a fixed, manual-only third option.
  */
 class ThemePreference(private val context: Context) {
@@ -30,13 +33,8 @@ class ThemePreference(private val context: Context) {
     }
 
     fun isSystemInDarkMode(): Boolean {
-        val uiModeManager = context.applicationContext.getSystemService(UiModeManager::class.java)
-        return if (uiModeManager != null) {
-            uiModeManager.nightMode == UiModeManager.MODE_NIGHT_YES
-        } else {
-            val uiMode = context.resources.configuration.uiMode
-            (uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
-        }
+        val uiMode = Resources.getSystem().configuration.uiMode
+        return (uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
     }
 
     @StyleRes
