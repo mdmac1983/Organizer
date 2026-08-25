@@ -32,11 +32,14 @@ class MainActivity : BaseActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var searchAdapter: AppGridAdapter
     private var allInstalledApps: List<InstalledApp> = emptyList()
+    private var footerBaseBottomPaddingPx = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        footerBaseBottomPaddingPx = binding.footerText.paddingBottom
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.statusBarColor = Color.TRANSPARENT
@@ -51,7 +54,10 @@ class MainActivity : BaseActivity() {
         }
         ViewCompat.setOnApplyWindowInsetsListener(binding.footerText) { view, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, view.paddingBottom + bars.bottom)
+            // Computed fresh from a fixed base every time — this listener can fire
+            // more than once, and adding to the view's *current* padding instead
+            // of a known base would compound the bottom padding on each dispatch.
+            view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, footerBaseBottomPaddingPx + bars.bottom)
             insets
         }
 
