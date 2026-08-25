@@ -56,7 +56,15 @@
         <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
     </style>
 
-    <style name="Theme.Organizer.Base" parent="Theme.Material3.Light.NoActionBar">
+    <!-- Shared items common to all three themes — duplicated across the three
+         theme definitions below rather than a single shared parent, so Dark
+         can extend a true Material3 Dark base instead of a Light-rooted one.
+         That matters for any system widget (PopupMenu, dialogs, etc.) whose
+         styling we haven't explicitly overridden — those now resolve using
+         Material3's own correctly-coordinated Light/Dark internals instead
+         of always falling back to Light-appropriate defaults. -->
+
+    <style name="Theme.Organizer.Light" parent="Theme.Material3.Light.NoActionBar">
         <item name="android:fontFamily">sans-serif</item>
         <item name="fontFamily">sans-serif</item>
         <item name="textAppearanceLabelSmall">@style/TextAppearance.Organizer.Caption</item>
@@ -68,9 +76,6 @@
         <item name="textAppearanceTitleLarge">@style/TextAppearance.Organizer.Headline</item>
         <item name="textAppearanceHeadlineSmall">@style/TextAppearance.Organizer.Display</item>
         <item name="android:statusBarColor">?attr/colorSurface</item>
-    </style>
-
-    <style name="Theme.Organizer.Light" parent="Theme.Organizer.Base">
         <item name="colorPrimary">@color/teal_primary</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorPrimaryContainer">@color/teal_container_light</item>
@@ -86,7 +91,18 @@
         <item name="android:windowBackground">@color/white</item>
     </style>
 
-    <style name="Theme.Organizer.Dark" parent="Theme.Organizer.Base">
+    <style name="Theme.Organizer.Dark" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.Organizer.Caption</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.Organizer.Caption</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.Organizer.Body</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.Organizer.Title</item>
+        <item name="textAppearanceTitleSmall">@style/TextAppearance.Organizer.Body</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.Organizer.Title</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.Organizer.Headline</item>
+        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.Organizer.Display</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
         <item name="colorPrimary">@color/teal_dark_variant</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorPrimaryContainer">@color/teal_container_dark</item>
@@ -102,7 +118,18 @@
         <item name="android:windowBackground">@color/dark_surface</item>
     </style>
 
-    <style name="Theme.Organizer.LightGray" parent="Theme.Organizer.Base">
+    <style name="Theme.Organizer.LightGray" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.Organizer.Caption</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.Organizer.Caption</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.Organizer.Body</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.Organizer.Title</item>
+        <item name="textAppearanceTitleSmall">@style/TextAppearance.Organizer.Body</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.Organizer.Title</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.Organizer.Headline</item>
+        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.Organizer.Display</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
         <item name="colorPrimary">@color/teal_primary</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorPrimaryContainer">@color/teal_container_light</item>
