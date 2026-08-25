@@ -99,7 +99,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                android:text="Which apps show on:"
+                android:text="Edit apps for:"
                 android:textAppearance="@style/TextAppearance.Organizer.Title" />
 
             <com.google.android.material.button.MaterialButtonToggleGroup
@@ -111,14 +111,6 @@
                 app:selectionRequired="true">
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnEditGuest"
-                    style="?attr/materialButtonOutlinedStyle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Guest" />
-
-                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnEditOwner"
                     style="?attr/materialButtonOutlinedStyle"
                     android:layout_width="0dp"
@@ -127,7 +119,46 @@
                     android:checked="true"
                     android:text="Owner" />
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnEditGuest"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Guest home" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnEditGuestDrawer"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Guest drawer" />
+
             </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp">
+                <Button
+                    android:id="@+id/btnSelectAll"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="4dp"
+                    android:text="Select all" />
+                <Button
+                    android:id="@+id/btnSelectNone"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:text="Select none" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/appChecklistContainer"
