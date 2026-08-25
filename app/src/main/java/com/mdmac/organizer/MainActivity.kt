@@ -78,6 +78,10 @@ class MainActivity : BaseActivity() {
 
         binding.toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
+                R.id.action_search -> {
+                    toggleAppSearch()
+                    true
+                }
                 R.id.action_home -> {
                     startActivity(Intent(this, HomeActivity::class.java))
                     true
@@ -138,6 +142,18 @@ class MainActivity : BaseActivity() {
             }
             override fun afterTextChanged(s: Editable?) {}
         })
+    }
+
+    private fun toggleAppSearch() {
+        val showing = binding.appSearchInput.visibility == View.VISIBLE
+        if (showing) {
+            binding.appSearchInput.visibility = View.GONE
+            binding.appSearchInput.setText("")
+            binding.appSearchResultsRecyclerView.visibility = View.GONE
+        } else {
+            binding.appSearchInput.visibility = View.VISIBLE
+            binding.appSearchInput.requestFocus()
+        }
     }
 
     companion object {
