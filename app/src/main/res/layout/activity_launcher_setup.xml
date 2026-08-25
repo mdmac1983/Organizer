@@ -80,12 +80,16 @@
                 android:visibility="gone">
                 <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:text="Pick a wallpaper" android:textAppearance="@style/TextAppearance.Organizer.Headline" />
-                <com.google.android.flexbox.FlexboxLayout
-                    android:id="@+id/wallpaperGrid"
+                <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    app:flexWrap="wrap" />
+                    android:layout_marginTop="12dp">
+                    <LinearLayout
+                        android:id="@+id/wallpaperGrid"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
             </LinearLayout>
 
         </FrameLayout>
