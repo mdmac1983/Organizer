@@ -36,7 +36,9 @@
             android:hint="Search apps"
             android:inputType="text"
             android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.Organizer.Body" />
+            android:textAppearance="@style/TextAppearance.Organizer.Body"
+            android:textColor="?attr/colorOnSurface"
+            android:textColorHint="?attr/colorOnSurfaceVariant" />
 
     </LinearLayout>
 
