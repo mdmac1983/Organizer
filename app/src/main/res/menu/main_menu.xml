@@ -2,13 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_pinned"
-        android:title="Pinned"
-        android:icon="@drawable/ic_pin"
+        android:id="@+id/action_home"
+        android:icon="@drawable/ic_row_launcher"
+        android:title="Owner Home"
         app:showAsAction="always" />
     <item
         android:id="@+id/action_settings"
+        android:icon="@android:drawable/ic_menu_preferences"
         android:title="Settings"
-        android:icon="@android:drawable/ic_menu_manage"
         app:showAsAction="always" />
 </menu>
