@@ -31,6 +31,10 @@
                     android:text="Set as your Home app" android:textAppearance="@style/TextAppearance.Organizer.Headline" />
                 <TextView android:id="@+id/launcherStatus" android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:layout_marginTop="8dp" android:textAppearance="@style/TextAppearance.Organizer.Body" />
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="After tapping below and selecting OrionMD Launcher, press the Back button to return here and continue setup."
+                    android:textAppearance="@style/TextAppearance.Organizer.Caption" android:alpha="0.7" />
                 <Button android:id="@+id/btnSetDefaultLauncher" style="?attr/materialButtonOutlinedStyle"
                     android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16dp"
                     android:text="Open Home app settings" />
@@ -48,8 +52,20 @@
                     android:layout_marginTop="4dp"
                     android:text="Tip: pinch outward on the home screen anytime to switch between Guest and Owner — works both ways, no PIN needed."
                     android:textAppearance="@style/TextAppearance.Organizer.Caption" android:alpha="0.7" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="12dp">
+                    <Button android:id="@+id/btnSelectAllOwnerHome" style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                        android:layout_marginEnd="4dp" android:text="Select all" />
+                    <Button android:id="@+id/btnSelectNoneOwnerHome" style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                        android:layout_marginStart="4dp" android:text="Select none" />
+                </LinearLayout>
                 <LinearLayout android:id="@+id/ownerHomeChecklist" android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="12dp" />
+                    android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="8dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -64,8 +80,20 @@
                     android:layout_marginTop="4dp"
                     android:text="Remember: pinch outward on the home screen to switch back to Owner anytime."
                     android:textAppearance="@style/TextAppearance.Organizer.Caption" android:alpha="0.7" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="12dp">
+                    <Button android:id="@+id/btnSelectAllGuestHome" style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                        android:layout_marginEnd="4dp" android:text="Select all" />
+                    <Button android:id="@+id/btnSelectNoneGuestHome" style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                        android:layout_marginStart="4dp" android:text="Select none" />
+                </LinearLayout>
                 <LinearLayout android:id="@+id/guestHomeChecklist" android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="12dp" />
+                    android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="8dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -76,8 +104,20 @@
                 android:visibility="gone">
                 <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:text="Choose what Guest can see in the app drawer" android:textAppearance="@style/TextAppearance.Organizer.Headline" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="12dp">
+                    <Button android:id="@+id/btnSelectAllGuestDrawer" style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                        android:layout_marginEnd="4dp" android:text="Select all" />
+                    <Button android:id="@+id/btnSelectNoneGuestDrawer" style="?attr/materialButtonOutlinedStyle"
+                        android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                        android:layout_marginStart="4dp" android:text="Select none" />
+                </LinearLayout>
                 <LinearLayout android:id="@+id/guestDrawerChecklist" android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="12dp" />
+                    android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="8dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -108,10 +148,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="16dp">
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="After tapping below and selecting OrionMD Launcher, press the Back button to return here and continue setup."
-                    android:textAppearance="@style/TextAppearance.Organizer.Caption" android:alpha="0.7" />
         <Button android:id="@+id/btnBack" style="?attr/materialButtonOutlinedStyle"
             android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Back" />
         <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
