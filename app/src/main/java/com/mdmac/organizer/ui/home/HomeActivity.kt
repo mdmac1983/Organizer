@@ -34,11 +34,13 @@ import com.mdmac.organizer.gestures.GestureAction
 import com.mdmac.organizer.gestures.GestureExecutor
 import com.mdmac.organizer.gestures.GesturePreference
 import com.mdmac.organizer.gestures.GestureType
+import com.mdmac.organizer.onboarding.OnboardingPreference
 import com.mdmac.organizer.profile.Profile
 import com.mdmac.organizer.profile.ProfileManager
 import com.mdmac.organizer.theme.BaseActivity
 import com.mdmac.organizer.ui.apps.AppGridAdapter
 import com.mdmac.organizer.ui.apps.AppGridItem
+import com.mdmac.organizer.ui.onboarding.LauncherSetupActivity
 import com.mdmac.organizer.ui.settings.SettingsActivity
 import com.mdmac.organizer.ui.wallpaper.WallpaperPickerActivity
 import kotlinx.coroutines.launch
@@ -70,6 +72,14 @@ class HomeActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val onboardingPreference = OnboardingPreference(this)
+        if (!onboardingPreference.isComplete()) {
+            startActivity(Intent(this, LauncherSetupActivity::class.java))
+            finish()
+            return
+        }
+
         try {
             binding = ActivityHomeBinding.inflate(layoutInflater)
             setContentView(binding.root)
@@ -117,6 +127,7 @@ class HomeActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
+        if (!::binding.isInitialized) return
         try {
             loadWallpaper()
             loadHome()
@@ -189,8 +200,6 @@ class HomeActivity : BaseActivity() {
         }
     }
 
-    /** Renders a fixed number of evenly-weighted slots (matching the profile's dock size),
-        so items stay spread across the full width regardless of how many are actually filled. */
     private fun populateDock(profile: Profile, dockApps: List<InstalledApp>) {
         binding.homeDockContainer.removeAllViews()
         binding.homeDockContainer.visibility = if (dockApps.isEmpty()) View.GONE else View.VISIBLE
