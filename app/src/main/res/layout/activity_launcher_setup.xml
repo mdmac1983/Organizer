@@ -44,6 +44,10 @@
                 android:visibility="gone">
                 <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:text="Choose Owner's home apps" android:textAppearance="@style/TextAppearance.Organizer.Headline" />
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Tip: pinch outward on the home screen anytime to switch between Guest and Owner — works both ways, no PIN needed."
+                    android:textAppearance="@style/TextAppearance.Organizer.Caption" android:alpha="0.7" />
                 <LinearLayout android:id="@+id/ownerHomeChecklist" android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="12dp" />
             </LinearLayout>
@@ -56,6 +60,10 @@
                 android:visibility="gone">
                 <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:text="Choose Guest's home apps" android:textAppearance="@style/TextAppearance.Organizer.Headline" />
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Remember: pinch outward on the home screen to switch back to Owner anytime."
+                    android:textAppearance="@style/TextAppearance.Organizer.Caption" android:alpha="0.7" />
                 <LinearLayout android:id="@+id/guestHomeChecklist" android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="12dp" />
             </LinearLayout>
