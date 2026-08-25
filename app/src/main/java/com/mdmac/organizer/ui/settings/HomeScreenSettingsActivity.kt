@@ -13,18 +13,14 @@ import com.mdmac.organizer.profile.Profile
 import com.mdmac.organizer.theme.BaseActivity
 import kotlinx.coroutines.launch
 
-/**
- * Owner-only screen: grid/dock size sliders for Owner's own Home, plus a
- * checklist of installed apps used to curate what Guest sees on theirs.
- * (Owner's own home-app selection reuses the same checklist mechanism,
- * switched via the toggle at the top.)
- */
+private enum class EditTarget { OWNER_HOME, GUEST_HOME, GUEST_DRAWER }
+
 class HomeScreenSettingsActivity : BaseActivity() {
 
     private lateinit var binding: ActivityHomeScreenSettingsBinding
     private lateinit var homeRepository: HomeRepository
     private lateinit var appsRepository: AppsRepository
-    private var editingProfile: Profile = Profile.OWNER
+    private var editTarget: EditTarget = EditTarget.OWNER_HOME
     private var allApps: List<InstalledApp> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,9 +36,15 @@ class HomeScreenSettingsActivity : BaseActivity() {
         setupSliders()
         binding.profileToggleGroup.addOnButtonCheckedListener { _, id, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
-            editingProfile = if (id == binding.btnEditGuest.id) Profile.GUEST else Profile.OWNER
+            editTarget = when (id) {
+                binding.btnEditGuest.id -> EditTarget.GUEST_HOME
+                binding.btnEditGuestDrawer.id -> EditTarget.GUEST_DRAWER
+                else -> EditTarget.OWNER_HOME
+            }
             refreshChecklist()
         }
+        binding.btnSelectAll.setOnClickListener { setAllChecked(true) }
+        binding.btnSelectNone.setOnClickListener { setAllChecked(false) }
         loadApps()
     }
 
@@ -57,7 +59,6 @@ class HomeScreenSettingsActivity : BaseActivity() {
 
         updateSliderLabels()
 
-        // apply-on-release: only commit the value in onStopTrackingTouch, per spec
         binding.columnsSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) = updateSliderLabels()
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
@@ -109,20 +110,43 @@ class HomeScreenSettingsActivity : BaseActivity() {
         }
     }
 
+    private fun currentSelection(): MutableSet<String> = when (editTarget) {
+        EditTarget.OWNER_HOME -> homeRepository.getHomePackages(Profile.OWNER).toMutableSet()
+        EditTarget.GUEST_HOME -> homeRepository.getHomePackages(Profile.GUEST).toMutableSet()
+        EditTarget.GUEST_DRAWER -> homeRepository.getGuestDrawerPackages().toMutableSet()
+    }
+
+    private fun saveSelection(selected: Set<String>) {
+        when (editTarget) {
+            EditTarget.OWNER_HOME -> homeRepository.setHomePackages(Profile.OWNER, selected)
+            EditTarget.GUEST_HOME -> homeRepository.setHomePackages(Profile.GUEST, selected)
+            EditTarget.GUEST_DRAWER -> homeRepository.setGuestDrawerPackages(selected)
+        }
+    }
+
     private fun refreshChecklist() {
         binding.appChecklistContainer.removeAllViews()
-        val selected = homeRepository.getHomePackages(editingProfile).toMutableSet()
+        val selected = currentSelection()
 
         allApps.forEach { app ->
             val itemBinding = ItemAppChecklistBinding.inflate(layoutInflater, binding.appChecklistContainer, false)
             itemBinding.appLabel.text = app.label
             itemBinding.appIcon.setImageDrawable(app.icon)
             itemBinding.checkbox.isChecked = app.packageName in selected
-            itemBinding.checkbox.setOnCheckedChangeListener { _, checked ->
-                if (checked) selected.add(app.packageName) else selected.remove(app.packageName)
-                homeRepository.setHomePackages(editingProfile, selected)
+            itemBinding.checkbox.setOnCheckedChangeListener { switchView, checked ->
+                if (switchView.isPressed) {
+                    val current = currentSelection()
+                    if (checked) current.add(app.packageName) else current.remove(app.packageName)
+                    saveSelection(current)
+                }
             }
             binding.appChecklistContainer.addView(itemBinding.root)
         }
+    }
+
+    private fun setAllChecked(checked: Boolean) {
+        val newSelection = if (checked) allApps.map { it.packageName }.toSet() else emptySet()
+        saveSelection(newSelection)
+        refreshChecklist()
     }
 }
