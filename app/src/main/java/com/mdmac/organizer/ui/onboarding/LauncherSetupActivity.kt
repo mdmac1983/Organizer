@@ -73,6 +73,13 @@ class LauncherSetupActivity : BaseActivity() {
         }
         buildWallpaperGrid()
 
+        binding.btnSelectAllOwnerHome.setOnClickListener { setAllChecked(binding.ownerHomeChecklist, Profile.OWNER, isDrawer = false, checked = true) }
+        binding.btnSelectNoneOwnerHome.setOnClickListener { setAllChecked(binding.ownerHomeChecklist, Profile.OWNER, isDrawer = false, checked = false) }
+        binding.btnSelectAllGuestHome.setOnClickListener { setAllChecked(binding.guestHomeChecklist, Profile.GUEST, isDrawer = false, checked = true) }
+        binding.btnSelectNoneGuestHome.setOnClickListener { setAllChecked(binding.guestHomeChecklist, Profile.GUEST, isDrawer = false, checked = false) }
+        binding.btnSelectAllGuestDrawer.setOnClickListener { setAllChecked(binding.guestDrawerChecklist, Profile.GUEST, isDrawer = true, checked = true) }
+        binding.btnSelectNoneGuestDrawer.setOnClickListener { setAllChecked(binding.guestDrawerChecklist, Profile.GUEST, isDrawer = true, checked = false) }
+
         goToStep(0)
     }
 
@@ -106,16 +113,24 @@ class LauncherSetupActivity : BaseActivity() {
             itemBinding.appLabel.text = app.label
             itemBinding.appIcon.setImageDrawable(app.icon)
             itemBinding.checkbox.isChecked = app.packageName in selected
-            itemBinding.checkbox.setOnCheckedChangeListener { _, checked ->
-                if (checked) selected.add(app.packageName) else selected.remove(app.packageName)
-                if (isDrawer) {
-                    homeRepository.setGuestDrawerPackages(selected)
-                } else {
-                    homeRepository.setHomePackages(profile, selected)
+            itemBinding.checkbox.setOnCheckedChangeListener { switchView, checked ->
+                if (switchView.isPressed) {
+                    if (checked) selected.add(app.packageName) else selected.remove(app.packageName)
+                    if (isDrawer) {
+                        homeRepository.setGuestDrawerPackages(selected)
+                    } else {
+                        homeRepository.setHomePackages(profile, selected)
+                    }
                 }
             }
             container.addView(itemBinding.root)
         }
+    }
+
+    private fun setAllChecked(container: android.widget.LinearLayout, profile: Profile, isDrawer: Boolean, checked: Boolean) {
+        val newSelection = if (checked) allApps.map { it.packageName }.toSet() else emptySet()
+        if (isDrawer) homeRepository.setGuestDrawerPackages(newSelection) else homeRepository.setHomePackages(profile, newSelection)
+        buildChecklist(container, profile, isDrawer)
     }
 
     private fun buildWallpaperGrid() {
