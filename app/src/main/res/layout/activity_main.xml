@@ -33,6 +33,7 @@
             android:hint="Search apps"
             android:inputType="text"
             android:maxLines="1"
+            android:visibility="gone"
             android:textColor="?attr/colorOnSurface"
             android:textColorHint="?attr/colorOnSurfaceVariant" />
 
