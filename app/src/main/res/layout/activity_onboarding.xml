@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="24dp"
-        android:text="Set up Simple Planner"
+        android:text="Set up OrionMD Launcher"
         android:textAppearance="@style/TextAppearance.Organizer.Headline" />
 
     <TextView
@@ -40,6 +40,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="Continue to Simple Planner" />
+        android:text="Continue" />
 
 </LinearLayout>
