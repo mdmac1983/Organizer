@@ -11,11 +11,11 @@
         android:id="@+id/searchBarContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="12dp"
+        android:layout_margin="8dp"
         android:background="@drawable/search_bar_background"
         android:orientation="horizontal"
         android:gravity="center"
-        android:paddingVertical="10dp"
+        android:paddingVertical="8dp"
         android:paddingHorizontal="12dp">
 
         <ImageView
@@ -52,8 +52,8 @@
             android:clipToPadding="false"
             android:paddingBottom="12dp"
             android:scrollbars="vertical"
-android:scrollbarStyle="outsideOverlay"
-android:fadeScrollbars="false"/>
+            android:scrollbarStyle="outsideOverlay"
+            android:fadeScrollbars="false" />
 
         <TextView
             android:id="@+id/emptyView"
