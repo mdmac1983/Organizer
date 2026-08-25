@@ -54,9 +54,6 @@ class MainActivity : BaseActivity() {
         }
         ViewCompat.setOnApplyWindowInsetsListener(binding.footerText) { view, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            // Computed fresh from a fixed base every time — this listener can fire
-            // more than once, and adding to the view's *current* padding instead
-            // of a known base would compound the bottom padding on each dispatch.
             view.setPadding(view.paddingLeft, view.paddingTop, view.paddingRight, footerBaseBottomPaddingPx + bars.bottom)
             insets
         }
@@ -82,22 +79,12 @@ class MainActivity : BaseActivity() {
         loadTabBackground()
         setupAppSearch()
 
-        binding.toolbar.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.action_search -> {
-                    toggleAppSearch()
-                    true
-                }
-                R.id.action_home -> {
-                    startActivity(Intent(this, HomeActivity::class.java))
-                    true
-                }
-                R.id.action_settings -> {
-                    startActivity(Intent(this, SettingsActivity::class.java))
-                    true
-                }
-                else -> false
-            }
+        binding.btnBottomSearch.setOnClickListener { toggleAppSearch() }
+        binding.btnBottomHome.setOnClickListener {
+            startActivity(Intent(this, HomeActivity::class.java))
+        }
+        binding.btnBottomSettings.setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
         }
     }
 
